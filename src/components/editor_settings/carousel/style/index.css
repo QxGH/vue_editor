@@ -1,0 +1,38 @@
+.carousel-setting .uploader {
+  text-align: center;
+}
+
+.carousel-setting .uploader .el-upload {
+  border: 1px dashed #d9d9d9;
+  border-radius: 6px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-setting .uploader .el-upload:hover {
+  border-color: #409EFF;
+}
+
+.carousel-setting .uploader .uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 148px;
+  height: 148px;
+  line-height: 148px;
+  text-align: center;
+}
+
+.carousel-setting .uploader .uploader-img {
+  width: 148px;
+  height: 148px;
+  display: block;
+}
+
+.carousel-setting .btn-box {
+  margin-top: 20px;
+}
+
+.carousel-setting .btn-box .add-btn {
+  width: 100%;
+}

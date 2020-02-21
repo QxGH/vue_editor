@@ -1,0 +1,11 @@
+.carousel-component .carousel-item {
+  background: #d3dce6;
+}
+
+.carousel-component .carousel-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}

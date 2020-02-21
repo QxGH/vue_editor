@@ -1,0 +1,10 @@
+.divider-component {
+  padding: 10px 0;
+}
+
+.divider-component .divider-line {
+  display: block;
+  height: 1px;
+  width: 100%;
+  background: #333;
+}

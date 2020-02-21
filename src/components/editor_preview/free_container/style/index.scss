@@ -1,0 +1,25 @@
+.free-container {
+  height: 300px;
+  position: static !important;
+  .free-preview-list {
+    height: 100%;
+  }
+  .vdr {
+    border: 1px dashed #4af;
+    .handle {
+      border-radius: 50%;
+      border: 1px solid #fff;
+      box-sizing: border-box;
+      background: #4af;
+    }
+  }
+  .component-wrap {
+    width: 100%;
+    height: 100%;
+  }
+  // .free-preview-list {
+  //   .component-list-box {
+  //     width: 100% !important;
+  //   }
+  // }
+}
