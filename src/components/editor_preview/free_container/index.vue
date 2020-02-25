@@ -1,12 +1,21 @@
 <template>
   <vdr class="free-container" :w="parentWidth" :h="parentHeight" :draggable="false" :handles="['bm']" @resizing="parentResize">
     <div style="width: 100%;height: 100%;">
+      <Contextmenu ref="contextmenu" @contextmenu="handleContextmenu">
+        <ContextmenuItem :disabled="contextMenuDisabled.toTop" @click="contextMenuToTop">置于顶层</ContextmenuItem>
+        <ContextmenuItem :disabled="contextMenuDisabled.toUp" @click="contextMenuToUp">上移一层</ContextmenuItem>
+        <ContextmenuItem :disabled="contextMenuDisabled.toDown" @click="contextMenuToDown">下移一层</ContextmenuItem>
+        <ContextmenuItem :disabled="contextMenuDisabled.toBottom" @click="contextMenuToBottom">置于底层</ContextmenuItem>
+        <ContextmenuItem @click="contextMenuCopy">复制</ContextmenuItem>
+        <ContextmenuItem @click="contextMenuDel">删除</ContextmenuItem>
+      </Contextmenu>
       <draggable
         class="free-preview-list"
         :list="containerListClone"
         data-name="freePreviewDrag"
         :data-index="itemIndex"
         group="free"
+        :sort="false"
         element="div"
         @change="log"
         :disabled="dragDisabled"
@@ -29,6 +38,7 @@
             :snapTolerance="10"
             @refLineParams="getRefLineParams"
             :isConflictCheck="false"
+            v-contextmenu:contextmenu
           >
             <div class="component-wrap" @mouseover="mouseOverHandle" @mouseout="mouseOutHandle">
               <component :is="item.previewComponent" :setting="item.setting"></component>
@@ -66,10 +76,20 @@
 </template>
 
 <script>
+import uuidV4 from "uuid/v4";
+
 import draggable from "vuedraggable";
 import vdr from "vue-draggable-resizable-gorkys";
 
 import { mapState, mapMutations } from "vuex";
+
+import {directive,
+    Contextmenu,
+    ContextmenuItem,
+    ContextmenuSubmenu,
+    ContextmenuGroup
+    } from 'v-contextmenu'
+import 'v-contextmenu/dist/index.css'
 
 import FreeImage from "../../../components/editor_preview/free_image";
 
@@ -78,7 +98,15 @@ export default {
   components: {
     draggable,
     vdr,
-    FreeImage
+    FreeImage,
+    directive,
+    Contextmenu,
+    ContextmenuItem,
+    ContextmenuSubmenu,
+    ContextmenuGroup
+  },
+  directives: {
+    contextmenu: directive,
   },
   computed: {
     ...mapState(["editorList", "editorIndex"])
@@ -102,7 +130,17 @@ export default {
       submitLater: null,
       dragDisabled: false,
       vLine: [],
-      hLine: []
+      hLine: [],
+      contextMenuDisabled: {
+        toTop: false,
+        toUp: false,
+        toDown: false,
+        toBottom: false
+      },
+      contextMenuProps: {
+        key: 0,
+        z: 1
+      }
     };
   },
   methods: {
@@ -111,21 +149,104 @@ export default {
       console.log("free-container change log");
       // console.log(this.editorList[this.itemIndex].setting.children);
       console.log(evt)
-      // console.log(this.editorList)
-      // console.log(this.editorList[this.itemIndex].setting.children)
-      // console.log(this.containerList)
-      // let children = this.editorList
-      // console.log(children)
-      // debugger
-      // let obj = evt.added.element;
-      // this.containerList.push(obj)
-      // console.log(this.setting)
-      // debugger
-      // this.containerList = this.deepClone(this.editorList[this.itemIndex].setting.children);
+    },
+    // 右键点击事件
+    handleContextmenu(vnode){
+      this.contextMenuProps.key = vnode.key;
+      this.contextMenuProps.z = vnode.componentOptions.propsData.z;
 
+      // 是否禁用右键部分选项
+      this.contextMenuDisabled.toDown = false;
+      this.contextMenuDisabled.toBottom = false;
+      this.contextMenuDisabled.toTop = false;
+      this.contextMenuDisabled.toUp = false;
+      if(vnode.componentOptions.propsData.z == 1) {
+        this.contextMenuDisabled.toDown = true;
+        this.contextMenuDisabled.toBottom = true;
+      } else if(vnode.componentOptions.propsData.z == this.containerList.length) {
+        this.contextMenuDisabled.toTop = true;
+        this.contextMenuDisabled.toUp = true;
+      };
+    },
+    // 右键菜单点击选项事件
+    contextMenuToTop(){
+      // 置于顶层
+      // console.log(this.contextMenuProps)
       // console.log(this.containerList)
-      // console.log(this.editorList[this.itemIndex].setting.children)
-      // debugger
+      let containerList = this.containerList;
+      let key = this.contextMenuProps.key;
+      for(let i=key+1; i<containerList.length; i++){
+        containerList[i].setting.z--;
+      };
+      containerList[key].setting.z = containerList.length;
+      this.containerList = this.containerListSort(containerList);
+      this.submit();
+    },
+    contextMenuToUp(){
+      // 上移一层
+      let containerList = this.containerList;
+      let key = this.contextMenuProps.key;
+      containerList[key].setting.z++;
+      containerList[key+1].setting.z--;
+      this.containerList = this.containerListSort(containerList);
+      this.submit();
+    },
+    contextMenuToDown(){
+      // 下移一层
+      let containerList = this.containerList;
+      let key = this.contextMenuProps.key;
+      containerList[key].setting.z--;
+      containerList[key-1].setting.z++;
+      this.containerList = this.containerListSort(containerList);
+      this.submit();
+    },
+    contextMenuToBottom(){
+      // 置于底部
+      let containerList = this.containerList;
+      let key = this.contextMenuProps.key;
+      for(let i=0; i<key-1; i++){
+        containerList[i].setting.z++;
+      };
+      containerList[key].setting.z = 1;
+      this.containerList = this.containerListSort(containerList);
+      this.submit();
+    },
+    containerListSort(list) {
+      // 根据 z 轴 排序组件
+      for (let i=0; i < list.length-1; i++) {
+        for (let j=0; j < list.length-1-i; j++) {
+          if (list[j].setting.z > list[j+1].setting.z) {
+            let temp = list[j];
+            list[j] = list[j + 1];
+            list[j + 1] = temp;
+          }
+        }
+      };
+      return list;
+    },
+    contextMenuCopy(){
+      // 复制自由组件
+      let containerList = this.containerList;
+      let key = this.contextMenuProps.key;
+      let obj = containerList[key];
+      obj.id = uuidV4();
+      obj.setting.z = containerList.length+1;
+      containerList.push(obj);
+      this.containerList = this.containerListSort(containerList);
+      this.$message.success('复制成功！');
+      this.submit();
+    },
+    contextMenuDel(){
+      // 删除自由组件
+      let containerList = this.containerList;
+      let key = this.contextMenuProps.key;
+      containerList.splice(key, 1);
+      for(let i=0; i<containerList.length; i++){
+        containerList[i].setting.z = i+1;
+      };
+      this.containerList = containerList;
+      this.$message.success('删除成功！');
+      this.submit();
     },
     parentResize(x, y, w, h) {
       if(this.windowResizeLater) {
@@ -148,14 +269,14 @@ export default {
       this.containerList[index].setting.y = y;
       this.containerList[index].setting.width = width;
       this.containerList[index].setting.height = height;
-      // this.submit()
+      this.submit()
     },
     onDrag(index, [x, y]) {
       this.containerList[index].setting.x = x;
       this.containerList[index].setting.y = y;
       console.log("onDrag");
-      console.log(this.containerList)
-      console.log(this.editorList[this.itemIndex].setting.children);
+      // console.log(this.containerList)
+      // console.log(this.editorList[this.itemIndex].setting.children);
       this.submit()
     },
     submit() {

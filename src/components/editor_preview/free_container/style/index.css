@@ -5,6 +5,7 @@
 
 .free-container .free-preview-list {
   height: 100%;
+  width: 100%;
 }
 
 .free-container .vdr {
@@ -21,4 +22,10 @@
 .free-container .component-wrap {
   width: 100%;
   height: 100%;
+}
+
+.free-container .free-preview-list .component-list-box {
+  width: 100% !important;
+  height: 100% !important;
+  background: red;
 }

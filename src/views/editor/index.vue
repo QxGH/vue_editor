@@ -35,36 +35,50 @@
         <el-main>
           <div class="preview">
             <div class="preview-main">
-              <draggable
-                class="preview-list"
-                :list="previewList"
-                data-name="previewList"
-                group="normal"
-                element="div"
-                @change="log"
-                dragClass="draggable"
-                :disabled="dragDisabled"
-              >
-                <template v-for="(item, index) in previewList">
-                  <div
-                    class="preview-list-box"
-                    :class="{'isSelect': index === editorIndex}"
-                    :key="item.id"
-                    @click="clickComponent(item, index)"
-                  >
-                    <component :is="item.previewComponent" :setting="item.setting" :itemIndex="index" @dragDisabledHandle="dragDisabledHandle"></component>
-                  </div>
-                </template>
-              </draggable>
+              <div class="components-handle" v-show="componentsHandle.show" :style="{'top': componentsHandle.top+'px'}">
+                <span class="hendle-item" @click="componentsDel">
+                  <i class="el-icon-close"></i>
+                </span>
+                <span class="hendle-item" v-show="componentsHandle.upShow" @click="componentsToUp">
+                  <i class="el-icon-upload2"></i>
+                </span>
+                <span class="hendle-item" v-show="componentsHandle.downShow" @click="componentsToDown">
+                  <i class="el-icon-download"></i>
+                </span>
+              </div>
+              <vuescroll ref="scroll" :ops="vueScrollOps" @handle-scroll="handleScroll">
+                <draggable
+                  class="preview-list"
+                  :list="previewList"
+                  data-name="previewList"
+                  group="normal"
+                  element="div"
+                  @change="log"
+                  dragClass="draggable"
+                  :disabled="dragDisabled"
+                >
+                  <template v-for="(item, index) in previewList">
+                    <div
+                      class="preview-list-box"
+                      :id="'previewListBox-'+index"
+                      :class="{'isSelect': index === editorIndex}"
+                      :key="item.id"
+                      @click="clickComponent(item, index)"
+                    >
+                      <component :is="item.previewComponent" :setting="item.setting" :itemIndex="index" @dragDisabledHandle="dragDisabledHandle"></component>
+                    </div>
+                  </template>
+                </draggable>
+              </vuescroll>
             </div>
           </div>
         </el-main>
         <el-aside width="350px" class="right-aside">
-          <template v-if="settingComponent">
+          <template v-if="settingComponent && previewIndex !== ''">
             <component
               :is="settingComponent"
               @refreshState="refreshVuexState"
-              :setting="previewList[editorIndex].setting"
+              :setting="previewList[previewIndex].setting"
             ></component>
           </template>
         </el-aside>
@@ -93,6 +107,7 @@ import { mapState, mapMutations } from "vuex";
 
 import draggable from "vuedraggable";
 import uuidV4 from "uuid/v4";
+import vuescroll from 'vuescroll';
 
 import Carousel from "../../components/editor_preview/carousel";
 import CarouselSetting from "../../components/editor_settings/carousel";
@@ -108,10 +123,28 @@ export default {
     return {
       componentsList: [],
       previewList: [],
+      previewIndex: '',
       settingComponent: "", // 当前应该显示的设置组件
       JsonDialog: false, // JSON 查看弹窗
       listGroupOption: { name: 'normal', pull: 'clone', put: false },
-      dragDisabled: false
+      dragDisabled: false,
+      vueScrollOps: {
+        vuescroll: {},
+        scrollPanel: {
+          scrollingX: false
+        },
+        rail: {},
+        bar: {
+          background: '#000000',
+          opacity: '0.2'
+        }
+      },
+      componentsHandle: {
+        top: 0,
+        show: false,
+        upShow: true,
+        downShow: true
+      }
     };
   },
   computed: {
@@ -134,20 +167,77 @@ export default {
     CarouselSetting,
     Divider,
     DividerSetting,
-    FreeContainer
+    FreeContainer,
+    vuescroll
   },
   methods: {
     ...mapMutations(["CHANGE_EDITOR_LIST", "CHANGE_EDITOR_INDEX"]),
     // changeEditorList(val){
     //   this.CHANGE_EDITOR_LIST(val)
     // },
+    componentsDel(){
+      // 组件删除
+      let editorList = this.deepClone(this.editorList);
+      let editorIndex = this.deepClone(this.editorIndex);
+      editorList.splice(editorIndex, 1);
+      this.previewIndex = '';
+      this.CHANGE_EDITOR_INDEX('');
+      this.CHANGE_EDITOR_LIST(editorList);
+      this.previewList = editorList;
+      this.$message.success("删除成功")
+    },
+    componentsToUp(){
+      // 组件排序向上
+      let editorList = this.deepClone(this.editorList);
+      let editorIndex = this.deepClone(this.editorIndex);
+      const temp = editorList[editorIndex];
+      editorList[editorIndex] = editorList[editorIndex-1];
+      editorList[editorIndex-1] = temp;
+      this.previewList = editorList;
+      this.CHANGE_EDITOR_LIST(editorList);
+    },
+    componentsToDown(){
+      // 组件排序向下
+      let editorList = this.deepClone(this.editorList);
+      let editorIndex = this.deepClone(this.editorIndex);
+      const temp = editorList[editorIndex];
+      editorList[editorIndex] = editorList[editorIndex+1];
+      editorList[editorIndex+1] = temp;
+      this.previewList = editorList;
+      this.CHANGE_EDITOR_LIST(editorList);
+    },
+    handleScroll(vertical, horizontal, nativeEvent){
+      // scroll 滚动事件
+      console.log(vertical, horizontal, nativeEvent)
+      // debugger
+      this.componentsHandle.show = false
+    },
     refreshVuexState() {
       this.previewList = this.editorList;
+      this.previewIndex = this.editorIndex
       console.log(this.previewList);
     },
     clickComponent(item, index) {
       this.CHANGE_EDITOR_INDEX(index);
+      this.previewIndex = index;
       this.settingComponent = item.settingComponent;
+      // 显示 handle
+      let id = `previewListBox-${index}`;
+      console.log(document.getElementById(id).offsetTop)
+      console.log(this.$refs['scroll'].scrollPanelElm.scrollTop)
+      let scrollTop =  this.$refs['scroll'].scrollPanelElm ? this.$refs['scroll'].scrollPanelElm.scrollTop : 0;
+      let top = document.getElementById(id).offsetTop - scrollTop;
+
+      this.componentsHandle.top = top > 589 ? 589 : top;
+      this.componentsHandle.show = true;
+      this.componentsHandle.upShow = true;
+      this.componentsHandle.downShow = true;
+      if(index == 0) {
+        this.componentsHandle.upShow = false;
+      };
+      if(index == this.editorList.length-1) {
+        this.componentsHandle.downShow = false;
+      };
     },
     log: function(evt) {
       // console.log(evt);
@@ -167,7 +257,8 @@ export default {
       console.log(val)
       console.log(this.editorList)
       if(val.to.dataset.name === 'previewList') {
-        this.CHANGE_EDITOR_INDEX(val.newIndex);
+        // 默认选中
+        this.clickComponent(this.editorList[val.newIndex], val.newIndex)
       } else if(val.to.dataset.name === 'freePreviewDrag') {
         let editorList = this.editorList;
         let editorIndex = Number(val.to.dataset.index);
@@ -179,6 +270,7 @@ export default {
               ...item,
               id: uuidV4()
             };
+            obj.setting.z = setting.children.length+1;
             setting.children.push(obj);
             this.CHANGE_EDITOR_LIST(editorList)
             break;
