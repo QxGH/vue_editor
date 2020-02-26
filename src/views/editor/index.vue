@@ -17,7 +17,7 @@
             :sort="false"
             @start="startHandle"
             @end="endHandle"
-            @change="log"
+            @change="componentsLog"
             :disabled="dragDisabled"
           >
             <template v-for="item in componentsList" >
@@ -53,7 +53,7 @@
                   data-name="previewList"
                   group="normal"
                   element="div"
-                  @change="log"
+                  @change="previewLog"
                   dragClass="draggable"
                   :disabled="dragDisabled"
                 >
@@ -65,7 +65,7 @@
                       :key="item.id"
                       @click="clickComponent(item, index)"
                     >
-                      <component :is="item.previewComponent" :setting="item.setting" :itemIndex="index" @dragDisabledHandle="dragDisabledHandle"></component>
+                      <component :is="item.previewComponent" :setting="item.setting" :freeGroup="freeGroup" :itemIndex="index" @dragDisabledHandle="dragDisabledHandle"></component>
                     </div>
                   </template>
                 </draggable>
@@ -87,7 +87,7 @@
     <!-- JSON 弹窗 -->
     <template>
       <el-dialog
-        title="提示"
+        title="JSON数据"
         :visible.sync="JsonDialog"
         width="900px">
         <div style="text-align: left; line-height: 24px;">
@@ -144,7 +144,9 @@ export default {
         show: false,
         upShow: true,
         downShow: true
-      }
+      },
+      freeGroup: 'free',  // 自由容器 拖动插件组
+      previewLogData: {}, // preview 拖动log数据
     };
   },
   computed: {
@@ -154,7 +156,7 @@ export default {
     }
   },
   created() {
-    this.componentsList = this.deepClone(componentsListConfig);;
+    this.componentsList = this.deepClone(componentsListConfig);
   },
   watch: {
     getStoreItem() {
@@ -239,29 +241,83 @@ export default {
         this.componentsHandle.downShow = false;
       };
     },
-    log: function(evt) {
+    componentsLog(evt) {
       // console.log(evt);
       // console.log(this.componentsList)
       // console.log(this.previewList)
+    },
+    previewLog(evt){
+      this.previewLogData = evt.added
       this.CHANGE_EDITOR_LIST(this.previewList);
     },
     startHandle(val){
       // console.log('startHandle val')
       // console.log(val.item.dataset.type)
       if(val.item.dataset.type == 'free') {
-        this.listGroupOption.name = 'free'
+        // this.listGroupOption.name = 'free'
+        this.freeGroup = 'normal'
       }
     },
     endHandle(val){
-      console.log('endHandle')
-      console.log(val)
-      console.log(this.editorList)
+      let editorList = this.editorList;
+      let editorIndex = Number(val.to.dataset.index);
+      // console.log('endHandle')
+      // console.log(val)
+      // console.log(this.editorList)
+      // console.log(this.previewLogData)
+      // console.log(this.previewList)
+      // debugger
       if(val.to.dataset.name === 'previewList') {
-        // 默认选中
-        this.clickComponent(this.editorList[val.newIndex], val.newIndex)
+        if(this.previewLogData.element.type === 'free') {
+          // newIndex
+          editorList.splice(editorList.length-1, 1);
+          let obj = {
+            id: uuidV4(),
+            label: 'freeContainer',
+            name: '自由容器',
+            type: 'freeContainer',
+            icon: 'icon-container',
+            previewComponent: 'FreeContainer',
+            settingComponent: '',
+            setting: {
+              height: '300',
+              children: []
+            }
+          };
+          // let componentsList = this.deepClone(componentsListConfig);
+          // for(let item of componentsList) {
+          //   if(item.label == this.previewLogData.element.label) {
+          //     let children = item;
+          //     children.id = uuidV4();
+          //     obj.setting.children = children;
+          //     break;
+          //   }
+          // };
+          if(this.previewLogData.element.label === 'freeImage') {
+            obj.setting.children = [{
+              id: uuidV4(),
+              label: 'freeImage',
+              name: '图片',
+              type: 'free',
+              icon: 'icon-image',
+              previewComponent: 'FreeImage',
+              settingComponent: '',
+              setting: {
+                imageUrl: 'https://qxtodo.com/editor/animation_wallpaper.jpg',
+                width: 100,
+                height: 100,
+                x: 0,
+                y: 0,
+                z: 1
+              }
+            }]
+          };
+          editorList.push(obj);
+        } else {
+          // 默认选中
+          this.clickComponent(this.editorList[val.newIndex], val.newIndex)
+        };
       } else if(val.to.dataset.name === 'freePreviewDrag') {
-        let editorList = this.editorList;
-        let editorIndex = Number(val.to.dataset.index);
         let setting = editorList[editorIndex].setting;
         let label = val.item.dataset.label;
         for(let item of this.componentsList) {
@@ -272,12 +328,16 @@ export default {
             };
             obj.setting.z = setting.children.length+1;
             setting.children.push(obj);
-            this.CHANGE_EDITOR_LIST(editorList)
             break;
           }
         };
       }
-      this.listGroupOption.name = 'normal'
+      // this.listGroupOption.name = 'normal'
+      this.freeGroup = 'free'
+      this.previewList = editorList;
+      // debugger
+      this.CHANGE_EDITOR_LIST(editorList)
+
     },
     cloneHandle(obj) {
       console.log("clone obj");

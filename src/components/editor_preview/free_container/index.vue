@@ -14,7 +14,7 @@
         :list="containerListClone"
         data-name="freePreviewDrag"
         :data-index="itemIndex"
-        group="free"
+        :group="freeGroup"
         :sort="false"
         element="div"
         @change="log"
@@ -28,7 +28,11 @@
             :x="item.setting.x"
             :y="item.setting.y"
             :z="item.setting.z"
-            :key="index"
+            :key="item.id"
+            :data-z="item.setting.z"
+            :data-x="item.setting.x"
+            :data-y="item.setting.y"
+            :data-index="index"
             @dragging="onDrag(index, arguments)"
             @resizing="onResize(index, arguments)"
             @activated="onActivated"
@@ -111,12 +115,22 @@ export default {
   computed: {
     ...mapState(["editorList", "editorIndex"])
   },
-  props: ["itemIndex",'setting'],
+  props: ["itemIndex",'setting','freeGroup'],
   watch: {
     'setting.children': {
-      immediate: true,    // 这句重要
+      immediate: true,
       handler (val) {
-        this.containerList = this.deepClone(val);
+        console.log('watch - setting.children')
+        console.log(val)
+        if(this.watchSettingLater) {
+          clearTimeout(this.watchSettingLater)
+          this.watchSettingLater = null;
+        };
+        this.watchSettingLater = setTimeout(() => {
+          this.containerList = this.deepClone(val);
+          clearTimeout(this.watchSettingLater)
+          this.watchSettingLater = null;
+        }, 100);
       }
     }
   },
@@ -140,7 +154,8 @@ export default {
       contextMenuProps: {
         key: 0,
         z: 1
-      }
+      },
+      watchSettingLater: null,  // 监听 props setting 变化赋值定时器
     };
   },
   methods: {
@@ -152,18 +167,24 @@ export default {
     },
     // 右键点击事件
     handleContextmenu(vnode){
-      this.contextMenuProps.key = vnode.key;
-      this.contextMenuProps.z = vnode.componentOptions.propsData.z;
+      // let index = vnode.data.attrs.dataIndex;
+      // let z = vnode.data.attrs.dataZ;
+      let index = Number(vnode.elm.dataset.index);
+      let z = Number(vnode.elm.dataset.z);
+      
+      // this.contextMenuProps.key = vnode.key;
+      this.contextMenuProps.key = index;
+      this.contextMenuProps.z = z;
 
       // 是否禁用右键部分选项
       this.contextMenuDisabled.toDown = false;
       this.contextMenuDisabled.toBottom = false;
       this.contextMenuDisabled.toTop = false;
       this.contextMenuDisabled.toUp = false;
-      if(vnode.componentOptions.propsData.z == 1) {
+      if(z == 1) {
         this.contextMenuDisabled.toDown = true;
         this.contextMenuDisabled.toBottom = true;
-      } else if(vnode.componentOptions.propsData.z == this.containerList.length) {
+      } else if(z == this.containerList.length) {
         this.contextMenuDisabled.toTop = true;
         this.contextMenuDisabled.toUp = true;
       };
@@ -188,7 +209,10 @@ export default {
       let key = this.contextMenuProps.key;
       containerList[key].setting.z++;
       containerList[key+1].setting.z--;
-      this.containerList = this.containerListSort(containerList);
+      let newContainerList = this.containerListSort(containerList);
+      console.log('上移一层')
+      console.log(newContainerList)
+      this.containerList = newContainerList;
       this.submit();
     },
     contextMenuToDown(){
@@ -197,14 +221,17 @@ export default {
       let key = this.contextMenuProps.key;
       containerList[key].setting.z--;
       containerList[key-1].setting.z++;
-      this.containerList = this.containerListSort(containerList);
+      let newContainerList = this.containerListSort(containerList);
+      console.log('下移一层')
+      console.log(newContainerList)
+      this.containerList = newContainerList;
       this.submit();
     },
     contextMenuToBottom(){
       // 置于底部
       let containerList = this.containerList;
       let key = this.contextMenuProps.key;
-      for(let i=0; i<key-1; i++){
+      for(let i=0; i<key; i++){
         containerList[i].setting.z++;
       };
       containerList[key].setting.z = 1;
@@ -228,7 +255,7 @@ export default {
       // 复制自由组件
       let containerList = this.containerList;
       let key = this.contextMenuProps.key;
-      let obj = containerList[key];
+      let obj = this.deepClone(containerList[key]);
       obj.id = uuidV4();
       obj.setting.z = containerList.length+1;
       containerList.push(obj);
@@ -286,8 +313,8 @@ export default {
       };
       this.submitLater = setTimeout(() => {
         let editorList = this.editorList;
-        console.log(editorList[this.itemIndex].setting.children)
-        console.log(this.containerList)
+        // console.log(editorList[this.itemIndex].setting.children)
+        // console.log(this.containerList)
         editorList[this.itemIndex].setting.children = this.containerList;
         this.CHANGE_EDITOR_LIST(editorList);
         this.$emit("refreshState", "");
@@ -360,6 +387,10 @@ export default {
     if(this.windowResizeLater) {
       clearTimeout(this.windowResizeLater);
       this.windowResizeLater = null;
+    };
+    if(this.watchSettingLater) {
+      clearTimeout(this.watchSettingLater)
+      this.watchSettingLater = null;
     };
   }
 };
