@@ -41,18 +41,18 @@ export default {
     colorChange(val) {
       let editorList = this.editorList;
       let editorIndex = this.editorIndex;
-      let setting = editorList[editorIndex].setting;
-      setting.color = val;
-      editorList[editorIndex].setting = setting;
+      // let setting = editorList[editorIndex].setting;
+      // setting.color = val;
+      editorList[editorIndex].setting.color = val;
       this.CHANGE_EDITOR_LIST(editorList)
       this.tellParent()
     },
     sizeChange(val) {
       let editorList = this.editorList;
       let editorIndex = this.editorIndex;
-      let setting = editorList[editorIndex].setting;
-      setting.size = val;
-      editorList[editorIndex].setting = setting;
+      // let setting = editorList[editorIndex].setting;
+      // setting.size = val;
+      editorList[editorIndex].setting.size = val;
       this.CHANGE_EDITOR_LIST(editorList)
       this.tellParent()
     },

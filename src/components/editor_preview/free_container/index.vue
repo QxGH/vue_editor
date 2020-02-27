@@ -35,7 +35,7 @@
             :data-index="index"
             @dragging="onDrag(index, arguments)"
             @resizing="onResize(index, arguments)"
-            @activated="onActivated"
+            @activated="onActivated(item, index)"
             @deactivated="onDeactivated"
             :parent="true"
             :snap="true"
@@ -45,7 +45,7 @@
             v-contextmenu:contextmenu
           >
             <div class="component-wrap" @mouseover="mouseOverHandle" @mouseout="mouseOutHandle">
-              <component :is="item.previewComponent" :setting="item.setting"></component>
+              <component :is="item.previewComponent" :setting="item.setting" @refreshState="tellParentRefresh"></component>
             </div>
           </vdr>
         </template>
@@ -69,13 +69,6 @@
         </template>
       </draggable>
     </div>
-
-    <!-- 
-    <vdr @activated="onActivated" :parent="true" @deactivated="onDeactivated">
-      <div style="width: 100%; height: 100%"  @mouseover="mouseOverHandle" @mouseout="mouseOutHandle">
-        <p>你可以拖着我，按照自己的意愿调整大小。</p>
-      </div>
-    </vdr>-->
   </vdr>
 </template>
 
@@ -95,14 +88,19 @@ import {directive,
     } from 'v-contextmenu'
 import 'v-contextmenu/dist/index.css'
 
+import FreeFill from "../../../components/editor_preview/free_fill";
 import FreeImage from "../../../components/editor_preview/free_image";
+import FreeText from "../../../components/editor_preview/free_text";
+
 
 export default {
   name: "freeContainer",
   components: {
     draggable,
     vdr,
+    FreeFill,
     FreeImage,
+    FreeText,
     directive,
     Contextmenu,
     ContextmenuItem,
@@ -119,6 +117,7 @@ export default {
   watch: {
     'setting.children': {
       immediate: true,
+      deep: true,
       handler (val) {
         console.log('watch - setting.children')
         console.log(val)
@@ -286,6 +285,11 @@ export default {
         window.dispatchEvent(resizeEvent);
         console.log(h)
         console.log(this.parentHeight);
+        let editorList = this.deepClone(this.editorList);
+        let editorIndex = this.deepClone(this.editorIndex);
+        editorList[editorIndex].setting.height = h;
+        this.CHANGE_EDITOR_LIST(editorList);
+        this.$emit("refreshState", "");
         clearTimeout(this.windowResizeLater);
         this.windowResizeLater = null;
       }, 300);
@@ -322,10 +326,13 @@ export default {
         this.submitLater = null;
       }, 300);
     },
-    onActivated() {
+    onActivated(item, index, e) {
       // this.active = true
       this.$emit("dragDisabledHandle", true);
       this.dragDisabled = true;
+
+      this.$emit("freeComponentClick", index);
+
     },
     onDeactivated() {
       // this.active = false
@@ -345,6 +352,9 @@ export default {
       // console.log(params);
       this.vLine = vLine;
       this.hLine = hLine;
+    },
+    tellParentRefresh(){
+      this.$emit('refreshState', '')
     },
     deepClone(target) {
       // 定义一个变量

@@ -1,6 +1,6 @@
 const list = [
   {
-    id: '1 ',
+    id: '1',
     label: 'carousel',
     name: '走马灯',
     icon: 'icon-carousel',
@@ -54,6 +54,40 @@ const list = [
       x: 0,
       y: 0,
       z: 1
+    }
+  }, {
+    id: '5',
+    label: 'freeText',
+    name: '文本',
+    type: 'free',
+    icon: 'icon-text',
+    previewComponent: 'FreeText',
+    settingComponent: 'FreeTextSetting',
+    setting: {
+      text: '文本内容',
+      color: '#333333',
+      size: '14',
+      width: 100,
+      height: 100,
+      x: 0,
+      y: 0,
+      z: 1
+    }
+  }, {
+    id: '6',
+    label: 'navbar',
+    name: '底部导航',
+    type: 'navbar',
+    icon: 'icon-navbar',
+    previewComponent: 'Navbar',
+    settingComponent: 'NavbarSetting',
+    setting: {
+      list: [
+        {
+          icon: '',
+          text: ''
+        }
+      ]
     }
   }
 ];

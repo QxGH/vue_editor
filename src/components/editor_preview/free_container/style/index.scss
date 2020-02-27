@@ -4,9 +4,12 @@
   .free-preview-list {
     height: 100%;
     width: 100%;
+    &>.vdr {
+      border: 0 !important;
+    }
   }
   .vdr {
-    border: 1px dashed #4af;
+    // border: 1px dashed #4af;
     .handle {
       border-radius: 50%;
       border: 1px solid #fff;

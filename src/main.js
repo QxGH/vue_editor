@@ -5,7 +5,7 @@ import store from './store'
 import './assets/style/app.min.css'
 
 // element
-import { Container, Header, Aside, Main, Footer, Button, Row, Col,Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane } from 'element-ui';
+import { Container, Header, Aside, Main, Footer, Button, Row, Col,Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane, Input } from 'element-ui';
 Vue.use(Container);
 Vue.use(Header);
 Vue.use(Aside);
@@ -31,6 +31,7 @@ Vue.use(Divider);
 Vue.use(Dialog);
 Vue.use(Tabs);
 Vue.use(TabPane);
+Vue.use(Input);
 
 // vdr
 import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'

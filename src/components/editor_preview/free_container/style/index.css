@@ -8,8 +8,8 @@
   width: 100%;
 }
 
-.free-container .vdr {
-  border: 1px dashed #4af;
+.free-container .free-preview-list > .vdr {
+  border: 0 !important;
 }
 
 .free-container .vdr .handle {

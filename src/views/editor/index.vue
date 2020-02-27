@@ -33,7 +33,7 @@
           </draggable>
         </el-aside>
         <el-main>
-          <div class="preview">
+          <div class="preview" :style="{height: showNavbarDragBox || navbarList.length>0 ? '667px' : '617px'}">
             <div class="preview-main">
               <div class="components-handle" v-show="componentsHandle.show" :style="{'top': componentsHandle.top+'px'}">
                 <span class="hendle-item" @click="componentsDel">
@@ -64,12 +64,42 @@
                       :class="{'isSelect': index === editorIndex}"
                       :key="item.id"
                       @click="clickComponent(item, index)"
+                      v-if="item.type != 'free'"
                     >
-                      <component :is="item.previewComponent" :setting="item.setting" :freeGroup="freeGroup" :itemIndex="index" @dragDisabledHandle="dragDisabledHandle"></component>
+                      <component :is="item.previewComponent" :setting="item.setting" :freeGroup="freeGroup" :itemIndex="index" @freeComponentClick="freeComponentClick" @dragDisabledHandle="dragDisabledHandle"></component>
                     </div>
                   </template>
                 </draggable>
               </vuescroll>
+            </div>
+            <div class="preview-navbar" v-if="showNavbarDragBox">
+              <draggable
+                class="preview-navbar-graggable"
+                :list="navbarList"
+                data-name="navbarList"
+                group="navbar"
+                element="div"
+                @change="navbarLog"
+                dragClass="draggable"
+                :disabled="dragDisabled"
+              >
+                <template v-for="(item, index) in navbarList">
+                  <div
+                    class="navbar-list-box"
+                    :id="'navbarListBox-'+index"
+                    :class="{'isSelect': selectNavbar}"
+                    :key="item.id"
+                    @click="clickNavbar(item, index)"
+                  >
+                    <component :is="item.previewComponent" @dragDisabledHandle="dragDisabledHandle"></component>
+                  </div>
+                </template>
+                <template v-if="navbarList.length <= 0">
+                  <div class="navbar-drag-tips" >
+                    请将底部导航拖动到此处
+                  </div>
+                </template>
+              </draggable>
             </div>
           </div>
         </el-main>
@@ -78,7 +108,15 @@
             <component
               :is="settingComponent"
               @refreshState="refreshVuexState"
-              :setting="previewList[previewIndex].setting"
+              :setting="previewList[previewIndex].label != 'freeContainer' ? previewList[previewIndex].setting : previewList[previewIndex].setting.children[settingFreeComponentIndex].setting"
+              :settingFreeComponentIndex="settingFreeComponentIndex"
+            ></component>
+          </template>
+          <template  v-if="settingComponent && selectNavbar">
+            <component
+              :is="settingComponent"
+              @refreshState="refreshVuexState"
+              :setting="navbarList[0].setting"
             ></component>
           </template>
         </el-aside>
@@ -91,7 +129,10 @@
         :visible.sync="JsonDialog"
         width="900px">
         <div style="text-align: left; line-height: 24px;">
+          <el-divider>View Data</el-divider>
           <pre style="white-space: pre-line;"><code>{{JSON.stringify(editorList)}}</code></pre>
+          <el-divider>Navbar Data</el-divider>
+          <pre style="white-space: pre-line;"><code>{{JSON.stringify(editorNav)}}</code></pre>
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="JsonDialog = false">关 闭</el-button>
@@ -114,6 +155,12 @@ import CarouselSetting from "../../components/editor_settings/carousel";
 import Divider from "../../components/editor_preview/divider";
 import DividerSetting from "../../components/editor_settings/divider";
 import FreeContainer from "../../components/editor_preview/free_container";
+import FreeTextSetting from "../../components/editor_settings/free_text";
+import Navbar from "../../components/editor_preview/navbar";
+import NavbarSetting from "../../components/editor_settings/navbar";
+
+
+
 
 import componentsListConfig from "./componentsList";
 let idGlobal = 8;
@@ -123,8 +170,12 @@ export default {
     return {
       componentsList: [],
       previewList: [],
+      previewLogData: {}, // preview 拖动log数据
       previewIndex: '',
+      navbarList: [],
+      selectNavbar: false,  // 是否选中底部导航
       settingComponent: "", // 当前应该显示的设置组件
+      settingFreeComponentIndex: "", // 当前应该显示的自由容器设置组件的下标
       JsonDialog: false, // JSON 查看弹窗
       listGroupOption: { name: 'normal', pull: 'clone', put: false },
       dragDisabled: false,
@@ -146,11 +197,11 @@ export default {
         downShow: true
       },
       freeGroup: 'free',  // 自由容器 拖动插件组
-      previewLogData: {}, // preview 拖动log数据
+      showNavbarDragBox: false, // 是否显示底部导航栏区域
     };
   },
   computed: {
-    ...mapState(["editorList", "editorIndex"]),
+    ...mapState(["editorList", "editorIndex", "editorNav"]),
     getStoreItem() {
       return this.$store.state.editorList;
     }
@@ -170,10 +221,13 @@ export default {
     Divider,
     DividerSetting,
     FreeContainer,
+    FreeTextSetting,
+    Navbar,
+    NavbarSetting,
     vuescroll
   },
   methods: {
-    ...mapMutations(["CHANGE_EDITOR_LIST", "CHANGE_EDITOR_INDEX"]),
+    ...mapMutations(["CHANGE_EDITOR_LIST", "CHANGE_EDITOR_INDEX", "CHANGE_NAVBAR_LIST"]),
     // changeEditorList(val){
     //   this.CHANGE_EDITOR_LIST(val)
     // },
@@ -211,7 +265,6 @@ export default {
     handleScroll(vertical, horizontal, nativeEvent){
       // scroll 滚动事件
       console.log(vertical, horizontal, nativeEvent)
-      // debugger
       this.componentsHandle.show = false
     },
     refreshVuexState() {
@@ -220,17 +273,23 @@ export default {
       console.log(this.previewList);
     },
     clickComponent(item, index) {
+      // 点击组件
+      this.selectNavbar = false;  // 点击普通组件 取消navbar选中
+
       this.CHANGE_EDITOR_INDEX(index);
       this.previewIndex = index;
-      this.settingComponent = item.settingComponent;
+
+      if(item.label !== 'freeContainer') {
+        this.settingComponent = item.settingComponent;
+      };
       // 显示 handle
       let id = `previewListBox-${index}`;
-      console.log(document.getElementById(id).offsetTop)
-      console.log(this.$refs['scroll'].scrollPanelElm.scrollTop)
+      // console.log(document.getElementById(id).offsetTop)
+      // console.log(this.$refs['scroll'].scrollPanelElm.scrollTop)
       let scrollTop =  this.$refs['scroll'].scrollPanelElm ? this.$refs['scroll'].scrollPanelElm.scrollTop : 0;
       let top = document.getElementById(id).offsetTop - scrollTop;
 
-      this.componentsHandle.top = top > 589 ? 589 : top;
+      this.componentsHandle.top = top > 539 ? 539 : top;
       this.componentsHandle.show = true;
       this.componentsHandle.upShow = true;
       this.componentsHandle.downShow = true;
@@ -241,6 +300,12 @@ export default {
         this.componentsHandle.downShow = false;
       };
     },
+    clickNavbar(item, index){
+      this.settingComponent = item.settingComponent;
+      this.CHANGE_EDITOR_INDEX('');
+      this.previewIndex = '';
+      this.selectNavbar = true;
+    },
     componentsLog(evt) {
       // console.log(evt);
       // console.log(this.componentsList)
@@ -250,23 +315,45 @@ export default {
       this.previewLogData = evt.added
       this.CHANGE_EDITOR_LIST(this.previewList);
     },
+    navbarLog(evt){
+      this.CHANGE_NAVBAR_LIST(this.navbarList)
+    },
     startHandle(val){
       // console.log('startHandle val')
       // console.log(val.item.dataset.type)
       if(val.item.dataset.type == 'free') {
         // this.listGroupOption.name = 'free'
         this.freeGroup = 'normal'
-      }
+        this.fillContainer()
+      };
+      if(val.item.dataset.type == 'navbar') {
+        if(this.navbarList.length > 0 ) {
+          this.listGroupOption.name = "other"
+        } else {
+          this.showNavbarDragBox = true;
+          this.listGroupOption.name = 'navbar'
+        };
+      };
     },
     endHandle(val){
-      let editorList = this.editorList;
+      let editorList = this.deepClone(this.editorList);
       let editorIndex = Number(val.to.dataset.index);
-      // console.log('endHandle')
-      // console.log(val)
+      console.log('endHandle')
+      console.log(val)
       // console.log(this.editorList)
       // console.log(this.previewLogData)
       // console.log(this.previewList)
-      // debugger
+
+      // 清除填充组件
+      if(val.item.dataset.type == 'free') {
+        for(let item of editorList) {
+          if(item.label == 'freeContainer') {
+            item.setting.children.splice(0,1);
+          };
+        } 
+      };
+
+      // 放置容器
       if(val.to.dataset.name === 'previewList') {
         if(this.previewLogData.element.type === 'free') {
           // newIndex
@@ -311,12 +398,36 @@ export default {
                 z: 1
               }
             }]
-          };
+          } else if (this.previewLogData.element.label === 'freeText') {
+            obj.setting.children = [{
+              id: uuidV4(),
+              label: 'freeText',
+              name: '文本',
+              type: 'free',
+              icon: 'icon-text',
+              previewComponent: 'FreeText',
+              settingComponent: 'FreeTextSetting',
+              setting: {
+                text: '文本内容',
+                color: '#333333',
+                size: '14',
+                width: 100,
+                height: 100,
+                x: 0,
+                y: 0,
+                z: 1
+              }
+            }]
+          }
           editorList.push(obj);
+          this.previewList = editorList;
+          this.$nextTick(function(){
+            this.clickComponent(this.editorList[val.newIndex], val.newIndex)
+          });
         } else {
           // 默认选中
           this.clickComponent(this.editorList[val.newIndex], val.newIndex)
-        };
+        }
       } else if(val.to.dataset.name === 'freePreviewDrag') {
         let setting = editorList[editorIndex].setting;
         let label = val.item.dataset.label;
@@ -334,14 +445,20 @@ export default {
       }
       // this.listGroupOption.name = 'normal'
       this.freeGroup = 'free'
+      this.listGroupOption.name = 'normal'
       this.previewList = editorList;
-      // debugger
       this.CHANGE_EDITOR_LIST(editorList)
 
     },
     cloneHandle(obj) {
       console.log("clone obj");
       console.log(obj)
+
+      // 如果已经有了 navbar 则return
+      if(obj.type == 'navbar' && this.navbarList.length > 0 ) {
+        return;
+      };
+
       // if(obj.type == 'free') {
       //   return false
       // }
@@ -364,8 +481,47 @@ export default {
       return newObj;
     },
     dragDisabledHandle(val){
+      // 自由组件拖动时  禁止其他拖动操作
       this.dragDisabled = val
       // console.log(`disabled ${val}`)
+    },
+    freeComponentClick(val){
+      // 自由组件被点击时
+      let editorList = this.deepClone(this.editorList);
+      let editorIndex = this.editorIndex;
+      this.settingFreeComponentIndex = val;
+      this.settingComponent = editorList[editorIndex].setting.children[val].settingComponent;
+    },
+    fillContainer(){
+      // 优化自由组件放置
+      let freeFill = {
+        id: uuidV4(),
+        label: 'freeFill',
+        name: '填充',
+        type: 'free',
+        icon: '',
+        previewComponent: 'FreeFill',
+        settingComponent: '',
+        setting: {
+          width: 375,
+          height: 300,
+          x: 0,
+          y: 0,
+          z: 0
+        }
+      };
+      let editorList = this.deepClone(this.editorList);
+      if(editorList.length > 0) {
+        editorList.map((item, index) => {
+          if(item.type == 'freeContainer') {
+            console.log(item, index)
+            freeFill.setting.height = Number(item.setting.height)
+            item.setting.children.unshift(freeFill);
+          };
+        })
+        this.CHANGE_EDITOR_LIST(editorList);
+        this.previewList = editorList;
+      };
     },
     deepClone(target) {
       // 定义一个变量
