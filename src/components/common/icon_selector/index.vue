@@ -1,6 +1,6 @@
 <template>
   <div class="icon-selector-dialog">
-    <el-dialog title="提示" width="700px" :visible.sync="dialogVisible">
+    <el-dialog title="图标选择器" width="800px" :visible.sync="dialogVisible">
       <div class="icon-dialog-body">
         <el-row :gutter="10">
           <template v-for="item in iconList">

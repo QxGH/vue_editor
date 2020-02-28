@@ -330,7 +330,6 @@ export default {
       // this.active = true
       this.$emit("dragDisabledHandle", true);
       this.dragDisabled = true;
-
       this.$emit("freeComponentClick", index);
 
     },

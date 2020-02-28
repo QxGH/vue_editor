@@ -46,8 +46,9 @@ const list = [
     type: 'free',
     icon: 'icon-image',
     previewComponent: 'FreeImage',
-    settingComponent: '',
+    settingComponent: 'FreeImageSetting',
     setting: {
+      imageID: 'default',
       imageUrl: 'https://qxtodo.com/editor/animation_wallpaper.jpg',
       width: 100,
       height: 100,

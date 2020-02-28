@@ -108,6 +108,29 @@
 
 .editor .preview .preview-navbar {
   height: 50px;
+  position: relative;
+}
+
+.editor .preview .preview-navbar .navbar-handle {
+  position: absolute;
+  right: -26px;
+  top: 0;
+  z-index: 99;
+  width: 26px;
+}
+
+.editor .preview .preview-navbar .navbar-handle .hendle-item {
+  background: rgba(0, 0, 0, 0.3);
+  text-align: center;
+  color: #fff;
+  line-height: 26px;
+  height: 26px;
+  display: block;
+  cursor: pointer;
+}
+
+.editor .preview .preview-navbar .navbar-handle .hendle-item:hover {
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .editor .preview .preview-navbar-graggable {

@@ -6,7 +6,7 @@ import './assets/style/app.min.css'
 import './assets/iconfont/font.css'
 
 // element
-import { Container, Header, Aside, Main, Footer, Button, Row, Col,Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane, Input } from 'element-ui';
+import { Container, Header, Aside, Main, Footer, Button, Row, Col,Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane, Input, Avatar } from 'element-ui';
 Vue.use(Container);
 Vue.use(Header);
 Vue.use(Aside);
@@ -33,6 +33,7 @@ Vue.use(Dialog);
 Vue.use(Tabs);
 Vue.use(TabPane);
 Vue.use(Input);
+Vue.use(Avatar)
 
 // vdr
 import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'

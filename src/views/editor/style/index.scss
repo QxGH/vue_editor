@@ -94,6 +94,26 @@
     }
     .preview-navbar {
       height: 50px;
+      position: relative;
+      .navbar-handle {
+        position: absolute;
+        right: -26px;
+        top: 0;
+        z-index: 99;
+        width: 26px;
+        .hendle-item {
+          background: rgba(0,0,0,0.3);
+          text-align: center;
+          color: #fff;
+          line-height: 26px;
+          height: 26px;
+          display: block;
+          cursor: pointer;
+          &:hover {
+            background: rgba(0,0,0,.4);
+          }
+        }
+      }
     }
     .preview-navbar-graggable {
       height: 50px;
