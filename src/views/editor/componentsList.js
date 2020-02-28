@@ -84,8 +84,9 @@ const list = [
     setting: {
       list: [
         {
-          icon: '',
-          text: ''
+          id: '1',
+          icon: 'icon-home',
+          text: 'home'
         }
       ]
     }

@@ -1,38 +1,63 @@
 <template>
   <div class="navbar-setting">
     <el-collapse v-model="activeName" accordion>
-      <!-- <template v-for="(item, index) in editorList[editorIndex].setting.list">
-        <el-collapse-item :title="'carousel-'+(index+1)" :name="index+1" :key="index">
-          11111
+      <template v-for="(item, index) in setting.list">
+        <el-collapse-item :title="'navbar-'+(index+1)" :name="index" :key="item.id">
+          <el-divider>icon</el-divider>
+            <div class="icon-selector" @click="chickIconSelector(item)">
+              <i class="iconfont" :class="item.icon"></i>
+            </div>
+          <el-divider>文本</el-divider>
+          <el-input
+            placeholder="请输入内容"
+            v-model="item.text"
+            maxlength="5"
+            show-word-limit
+            clearable
+            @input="textChange"
+          >
+          </el-input>
         </el-collapse-item>
-      </template> -->
+      </template>
     </el-collapse>
     <div class="btn-box">
       <el-button class="add-btn" type="primary" @click="addHandle">新增</el-button>
     </div>
+    <IconSelector v-if="showIconSelector" :selector="currentSelector" @submitIcon="submitIconHandle"></IconSelector>
   </div>
 </template>
 
 <script>
+import uuidV4 from "uuid/v4";
 import { mapState, mapMutations } from "vuex";
+
+import IconSelector from '../../../components/common/icon_selector/'
 
 export default {
   name: "navbarSetting",
   data(){
     return {
-      activeName: '1'
+      activeName: 0,
+      currentSelector: '',  // 当前选中的图标
+      showIconSelector: false,  // 是否显示图标选择弹窗
     }
+  },
+  components: {
+    IconSelector
   },
   props: {
     setting: {
       type: Object,
       default() {
-        return list = [
-          {
-            icon: "icon-home",
-            text: "home"
-          }
-        ]
+        return {
+          list: [
+            {
+              id: '1',
+              icon: "icon-home",
+              text: "home"
+            }
+          ]
+        };
       }
     }
   },
@@ -42,46 +67,38 @@ export default {
   methods: {
     ...mapMutations(['CHANGE_NAVBAR_LIST']),
     addHandle(){
-      let editorList = this.editorList;
-      let editorIndex = this.editorIndex;
-      let list = editorList[editorIndex].setting.list;
+      let editorNavList = this.editorNav;
+      let list = editorNavList[0].setting.list;
       if(list.length >= 5) {
-        this.$message.warning('最大只能添加5张卡片');
+        this.$message.warning('最大只能添加5个选项');
         return;
       };
       let newObj = {
-        imageUrl: 'https://qxtodo.com/editor/animation_wallpaper.jpg'
+        id: uuidV4(),
+        icon: 'icon-home',
+        text: 'home'
       };
       list.push(newObj);
-      editorList[editorIndex].setting.list = list;
-      this.CHANGE_EDITOR_LIST(editorList)
+      // editorNavList[editorIndex].setting.list = list;
+      this.CHANGE_NAVBAR_LIST(editorNavList)
+      this.tellParent();
+    },
+    textChange(val) {
+      let editorNavList = this.editorNav;
+      editorNavList[0].setting.list[this.activeName].text = val;
+      this.CHANGE_NAVBAR_LIST(editorNavList)
       this.tellParent()
     },
-    beforeUpload(file){
-      const isJPG = file.type === 'image/jpeg' || file.type === 'image/png';
-      const isLt2M = file.size / 1024 / 1024 < 2;
-
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是 JPG 格式!');
-        return
-      }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 2MB!');
-        return
-      };
-      this.loading = true
+    chickIconSelector(val){
+      this.showIconSelector = true;
+      this.currentSelector = val.icon;
     },
-    uploadSuccess(res, file) {
-      let url = URL.createObjectURL(file.raw);
-
-      let editorList = this.editorList;
-      let editorIndex = this.editorIndex;
-      let list = editorList[editorIndex].setting.list;
-      list[this.activeName-1].imageUrl = url;
-      editorList[editorIndex].setting.list = list;
-      this.CHANGE_EDITOR_LIST(editorList)
+    submitIconHandle(val){
+      let editorNavList = this.editorNav;
+      editorNavList[0].setting.list[this.activeName].icon = val;
+      this.showIconSelector = false;
+      this.CHANGE_NAVBAR_LIST(editorNavList)
       this.tellParent()
-      this.loading = false
     },
     tellParent(){
       this.$emit('refreshState', '')

@@ -119,8 +119,8 @@ export default {
       immediate: true,
       deep: true,
       handler (val) {
-        console.log('watch - setting.children')
-        console.log(val)
+        // console.log('watch - setting.children')
+        // console.log(val)
         if(this.watchSettingLater) {
           clearTimeout(this.watchSettingLater)
           this.watchSettingLater = null;

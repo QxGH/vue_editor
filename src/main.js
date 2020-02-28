@@ -3,6 +3,7 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import './assets/style/app.min.css'
+import './assets/iconfont/font.css'
 
 // element
 import { Container, Header, Aside, Main, Footer, Button, Row, Col,Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane, Input } from 'element-ui';

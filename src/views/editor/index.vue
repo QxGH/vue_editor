@@ -91,7 +91,7 @@
                     :key="item.id"
                     @click="clickNavbar(item, index)"
                   >
-                    <component :is="item.previewComponent" @dragDisabledHandle="dragDisabledHandle"></component>
+                    <component :is="item.previewComponent" :setting="item.setting" @dragDisabledHandle="dragDisabledHandle"></component>
                   </div>
                 </template>
                 <template v-if="navbarList.length <= 0">
@@ -446,6 +446,9 @@ export default {
       // this.listGroupOption.name = 'normal'
       this.freeGroup = 'free'
       this.listGroupOption.name = 'normal'
+      if(this.navbarList.length <= 0) {
+        this.showNavbarDragBox = false
+      };
       this.previewList = editorList;
       this.CHANGE_EDITOR_LIST(editorList)
 

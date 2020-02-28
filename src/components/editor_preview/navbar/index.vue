@@ -1,29 +1,27 @@
 <template>
   <div class="navbar">
-    <div class="nav-item">
-      nav-1
-    </div>
-    <div class="nav-item">
-      nav-2
-    </div>
+    <template v-for="item of setting.list">
+      <div class="nav-item" :key="item.id">
+        <span class="icon-box">
+          <i class="iconfont" :class="item.icon"></i>
+        </span>
+        <div class="text">{{item.text}}</div>
+      </div>
+    </template>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'navbar'
-}
+  name: "navbar",
+  props: ["setting"],
+  mounted() {
+    console.log("this.setting");
+    console.log(this.setting);
+  }
+};
 </script>
 
 <style>
-  .navbar {
-    width: 100%;
-    height: 100%;
-    text-align: center;
-    border-top: 1px solid #ddd;
-    display:flex;
-  }
-  .nav-item {
-    flex:1;
-  }
+@import url("./style/index.min.css");
 </style>

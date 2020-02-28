@@ -1,0 +1,27 @@
+.icon-selector-dialog {
+  .icon-wrap {
+    width: 70px;
+    height: 70px;
+    margin: 10px auto;
+    border: 1px solid #ddd;
+    text-align: center;
+    border-radius: 4px;
+    padding-top: 8px;
+    cursor: pointer;
+    &:hover {
+      background: #f1f1f1;
+    }
+    &.isSelect {
+      border-color: #409EFF;
+    }
+    .iconfont {
+      font-size: 30px;
+      line-height: 32px;
+    }
+    .icon-name {
+      line-height: 16px;
+      font-size: 14px;
+      margin-top: 2px;
+    }
+  }
+}

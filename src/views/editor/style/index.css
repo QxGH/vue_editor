@@ -1,6 +1,7 @@
 .editor {
   padding: 0;
   height: 100%;
+  min-width: 1120px;
 }
 
 .editor .el-container {
@@ -146,7 +147,7 @@
   background: #ddd;
   line-height: 50px;
   text-align: center;
-  color: 666;
+  color: #666;
 }
 
 .editor .components-handle {

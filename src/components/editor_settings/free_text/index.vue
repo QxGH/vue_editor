@@ -17,7 +17,7 @@
       :rows="5"
       placeholder="请输入内容"
       v-model="setting.text"
-      minlength="50"
+      maxlength="50"
       show-word-limit
       clearable
       :autosize="{minRows: 5, maxRows: 8}"
