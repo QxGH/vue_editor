@@ -16,9 +16,8 @@ export default {
   name: 'freeTextSetting',
   data(){
     return {
-      showImageSelector: false,
-      currentSelector: '',
-      currentImageID: 'default'
+      showImageSelector: false, // 是否显示图片选择器
+      currentImageID: 'default'  //当前选中图片id
     }
   },
   computed: {
@@ -56,11 +55,14 @@ export default {
       // console.log(this.settingFreeComponentIndex)
       // let setting = editorList[editorIndex].setting.children[this.settingFreeComponentIndex].setting;
       // setting.color = val;
-      editorList[editorIndex].setting.children[this.settingFreeComponentIndex].setting.imageID = val.imageID;
-      editorList[editorIndex].setting.children[this.settingFreeComponentIndex].setting.imageUrl = val.imageUrl;
-      // editorList[editorIndex].setting = setting;
-      this.CHANGE_EDITOR_LIST(editorList)
-      this.tellParent()
+      if(val.imageID && val.imageUrl) {
+        editorList[editorIndex].setting.children[this.settingFreeComponentIndex].setting.imageID = val.imageID;
+        editorList[editorIndex].setting.children[this.settingFreeComponentIndex].setting.imageUrl = val.imageUrl;
+        // editorList[editorIndex].setting = setting;
+        this.CHANGE_EDITOR_LIST(editorList)
+        this.tellParent()
+      };
+      
       this.showImageSelector = false; // 显示图片选择器
     },
     tellParent(){

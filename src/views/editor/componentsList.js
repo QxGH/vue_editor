@@ -11,6 +11,7 @@ const list = [
       height: '200',
       list: [
         {
+          imageID: "default",
           imageUrl: 'https://qxtodo.com/editor/animation_wallpaper.jpg'
         }
       ]

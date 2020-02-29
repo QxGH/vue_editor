@@ -18,6 +18,7 @@
                 action="https://www.fastmock.site/mock/bd760dd8ed7013045d3016137fe3801f/api/upload"
                 :show-file-list="false"
                 :on-success="uploadSuccess"
+                :on-error="uploadError"
                 :before-upload="beforeUpload">
                 <img v-if="uploadImageUrl" :src="uploadImageUrl" class="uploader-img">
                 <i v-else class="el-icon-plus uploader-icon"></i>
@@ -125,6 +126,10 @@ export default {
       this.imageList = imageList;
       localStorage.setItem('imageList', JSON.stringify(imageList))
       this.loading = false;
+    },
+    uploadError(err, file, fileList) {
+      this.loading = false;
+      this.$message.error('上传失败!');
     },
     close() {
       let obj = {
