@@ -5,6 +5,9 @@ import store from './store'
 import './assets/style/app.min.css'
 import './assets/iconfont/font.css'
 
+import api from './api' // 导入api接口
+Vue.prototype.$api = api; // 将api挂载到vue的原型上复制代码
+
 // element
 import { Container, Header, Aside, Main, Footer, Button, Row, Col,Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane, Input, Avatar } from 'element-ui';
 Vue.use(Container);
