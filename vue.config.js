@@ -19,7 +19,7 @@ if(process.env.NODE_ENV == 'development') {
     config.configureWebpack.devtool = 'source-map';
     config.devServer.proxy = {
         '/api': {
-            target: 'http://iimg.com.cn/api',  // 测试
+            target: 'https://iimg.com.cn/api',  // 测试
             changeOrigin: true,   //允许跨域
             ws: true,
             pathRewrite: {

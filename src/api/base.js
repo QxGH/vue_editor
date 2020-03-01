@@ -2,7 +2,7 @@ let base;
 
 if(process.env.NODE_ENV == 'production') {
   base = {
-    http: 'http://iimg.com.cn/api'
+    http: 'https://iimg.com.cn/api'
   };
 } else {
   base = {    
