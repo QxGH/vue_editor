@@ -75,7 +75,7 @@ export default {
       // let setting = editorList[editorIndex].setting;
       // setting.size = val;
       // editorList[editorIndex].setting = setting;
-      editorList[editorIndex].setting.children[this.settingFreeComponentIndex].setting.color = val;
+      editorList[editorIndex].setting.children[this.settingFreeComponentIndex].setting.size = val;
       this.CHANGE_EDITOR_LIST(editorList)
       this.tellParent()
     },
