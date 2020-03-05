@@ -16,6 +16,14 @@
       box-sizing: border-box;
       background: #4af;
     }
+    .handle-bm, .handle-tm  {
+      left: calc(50% - 4px);
+      margin-left: 0;
+    }
+    .handle-ml, .handle-mr {
+      top: calc(50% - 4px);
+      margin-top: 0;
+    }
   }
   .component-wrap {
     width: 100%;

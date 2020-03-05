@@ -231,7 +231,11 @@ export default {
       },
       freeGroup: "free", // 自由容器 拖动插件组
       showNavbarDragBox: false, // 是否显示底部导航栏区域
-      showNavbarHandle: false // 是否显示nabbar handle
+      showNavbarHandle: false, // 是否显示nabbar handle
+      dragOffsetData: { // 拖动时offset数据
+        x: 0,
+        y: 0
+      }
     };
   },
   computed: {
@@ -401,7 +405,12 @@ export default {
       this.CHANGE_NAVBAR_LIST(this.navbarList);
     },
     startHandle(val) {
-      // console.log('startHandle val')
+      console.log('startHandle val')
+      console.log(val)
+      this.dragOffsetData = {
+        x: val.originalEvent.offsetX,
+        y: val.originalEvent.offsetY
+      }
       // console.log(val.item.dataset.type)
       if (val.item.dataset.type == "free") {
         // this.listGroupOption.name = 'free'
@@ -521,14 +530,19 @@ export default {
         }
       } else if (val.to.dataset.name === "freePreviewDrag") {
         // 自由组件拖动到自由容器
+        let offsetX = val.originalEvent.offsetX - this.dragOffsetData.x,
+        offsetY = val.originalEvent.offsetY - this.dragOffsetData.y
+
         let setting = editorList[editorIndex].setting;
         let label = val.item.dataset.label;
         for (let item of this.componentsList) {
-          if (label == item.label) {
+          if (label === item.label) {
             let obj = {
               ...item,
               id: uuidV4()
             };
+            obj.setting.x = offsetX
+            obj.setting.y = offsetY
             obj.setting.z = setting.children.length + 1;
             setting.children.push(obj);
             break;

@@ -7,6 +7,7 @@ const list = [
     type: 'normal',
     previewComponent: 'Carousel',
     settingComponent: 'CarouselSetting',
+    version: 1,
     setting: {
       height: '200',
       list: [
@@ -24,6 +25,7 @@ const list = [
     type: 'normal',
     previewComponent: 'Divider',
     settingComponent: 'DividerSetting',
+    version: 1,
     setting: {
       color: '#333',
       size: '1'
@@ -36,6 +38,7 @@ const list = [
     icon: 'icon-container',
     previewComponent: 'FreeContainer',
     settingComponent: '',
+    version: 1,
     setting: {
       height: '300',
       children: []
@@ -48,6 +51,7 @@ const list = [
     icon: 'icon-image',
     previewComponent: 'FreeImage',
     settingComponent: 'FreeImageSetting',
+    version: 1,
     setting: {
       imageID: 'default',
       imageUrl: 'https://qxtodo.com/editor/animation_wallpaper.jpg',
@@ -65,6 +69,7 @@ const list = [
     icon: 'icon-text',
     previewComponent: 'FreeText',
     settingComponent: 'FreeTextSetting',
+    version: 1,
     setting: {
       text: '文本内容',
       color: '#333333',
@@ -83,6 +88,7 @@ const list = [
     icon: 'icon-navbar',
     previewComponent: 'Navbar',
     settingComponent: 'NavbarSetting',
+    version: 1,
     setting: {
       list: [
         {
