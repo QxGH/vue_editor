@@ -10,7 +10,8 @@
                 :class="{isSelect: item.isSelect}"
                 @click="selectImageHandle(item.id)"
               >
-                <el-avatar shape="square" :size="110" fit="contain" :src="item.imageUrl"></el-avatar>
+                <!-- <el-avatar shape="square" :size="110" fit="contain" :src="item.imageUrl"></el-avatar> -->
+                <el-image style="width: 110px; height: 110px" :src="item.imageUrl" fit="contain"></el-image>
               </div>
             </el-col>
           </template>
@@ -44,7 +45,7 @@
 import uuidV4 from "uuid/v4";
 import axios from "axios";
 
-import compressImg from '../../../tools/compressImg'
+import compressImg from "../../../tools/compressImg";
 
 export default {
   name: "iconSelector",
@@ -115,14 +116,14 @@ export default {
       if (!isJPG) {
         this.$message.error("上传头像图片只能是 JPG/PNG 格式!");
         return;
-      };
+      }
       if (!isLt1M) {
         this.$message.error("上传头像图片大小不能超过 1MB!");
         return;
-      };
-      let token = localStorage.getItem('iimgToken');
-      this.uploading(file)
-      
+      }
+      let token = localStorage.getItem("iimgToken");
+      this.uploading(file);
+
       return false;
     },
     uploadSuccess(res, file) {
@@ -141,22 +142,23 @@ export default {
       this.loading = false;
       this.$message.error("上传失败!");
     },
-    uploading(file){
+    uploading(file) {
       this.loading = true;
       let formData = new FormData();
-      formData.append('Filedata', file);
-      formData.append('file', 'multipart');
-      this.$api.imgapi.upload(formData)
+      formData.append("Filedata", file);
+      formData.append("file", "multipart");
+      this.$api.imgapi
+        .upload(formData)
         .then(res => {
           this.loading = false;
-          if(res.data.code === 1) {
-            this.uploadSuccess(res, file)
+          if (res.data.code === 1) {
+            this.uploadSuccess(res, file);
           } else {
-            this.$message.warning(res.data.msg)
+            this.$message.warning(res.data.msg);
           }
         })
         .catch(err => {
-          this.uploadError(err, file)
+          this.uploadError(err, file);
         });
     },
     close() {

@@ -17,7 +17,29 @@
 }
 
 .image-selector-dialog .image-dialog-body .image-box.isSelect {
+  position: relative;
   border-color: #409EFF;
+  font-size: 18px;
+  color: #409EFF;
+  font-family: element-icons !important;
+  speak: none;
+  font-style: normal;
+  font-weight: 400;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  vertical-align: baseline;
+  display: inline-block;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.image-selector-dialog .image-dialog-body .image-box.isSelect::after {
+  content: "\e79c";
+  display: inline-block;
+  position: absolute;
+  right: 3px;
+  top: 3px;
 }
 
 .image-selector-dialog .image-dialog-body .el-upload {

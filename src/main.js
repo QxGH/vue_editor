@@ -30,7 +30,7 @@ console.log(`
 `);
 
 // element
-import { Container, Header, Aside, Main, Footer, Button, Row, Col,Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane, Input, Avatar } from 'element-ui';
+import { Container, Header, Aside, Main, Footer, Button, Row, Col,Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane, Input, Avatar, Image } from 'element-ui';
 Vue.use(Container);
 Vue.use(Header);
 Vue.use(Aside);
@@ -58,6 +58,8 @@ Vue.use(Tabs);
 Vue.use(TabPane);
 Vue.use(Input);
 Vue.use(Avatar)
+Vue.use(Image)
+
 
 // vdr
 import 'vue-draggable-resizable-gorkys/dist/VueDraggableResizable.css'

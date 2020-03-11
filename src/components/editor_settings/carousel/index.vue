@@ -12,8 +12,9 @@
             <img v-if="item.imageUrl" :src="item.imageUrl" class="uploader-img">
             <i v-else class="el-icon-plus uploader-icon"></i>
           </el-upload>-->
-          <div class="image-selector" @click="selectorImageHandle(item.id)">
-            <el-avatar shape="square" :size="100" fit="contain" :src="item.imageUrl"></el-avatar>
+          <div class="image-selector" @click="selectorImageHandle(item.imageID)">
+            <!-- <el-avatar shape="square" :size="100" fit="contain" :src="item.imageUrl"></el-avatar> -->
+            <el-image style="width: 100px; height: 100px" :src="item.imageUrl" fit="contain"></el-image>
           </div>
         </el-collapse-item>
       </template>

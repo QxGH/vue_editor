@@ -2,7 +2,8 @@
   <div class="free-image-setting">
     <el-divider>图片</el-divider>
     <div class="image-selector" @click="selectorImageHandle">
-      <el-avatar shape="square" :size="100" fit="contain" :src="setting.imageUrl"></el-avatar>
+      <!-- <el-avatar shape="square" :size="100" fit="contain" :src="setting.imageUrl"></el-avatar> -->
+      <el-image style="width: 100px; height: 100px" :src="setting.imageUrl" fit="contain"></el-image>
     </div>
     <ImageSelector v-if="showImageSelector" :imageID="currentImageID" @submitImage="submitImageHandle"></ImageSelector>
   </div>
