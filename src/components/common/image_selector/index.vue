@@ -121,24 +121,12 @@ export default {
         return;
       };
       let token = localStorage.getItem('iimgToken');
-      // compressImg(file, 375, (blob) => {
-        if(!token) {
-          this.getIimgToken()
-          .then((res) => {
-            this.uploading(file)
-          })
-          .catch((err) => {
-            return;
-          })
-        } else {
-          this.uploading(file)
-        };
-      // })
+      this.uploading(file)
       
       return false;
     },
     uploadSuccess(res, file) {
-      let url = res.data.data.url;
+      let url = res.data.linkurl;
       let obj = {
         id: uuidV4(),
         isSelect: false,
@@ -157,11 +145,11 @@ export default {
     uploading(file){
       this.loading = true;
       let formData = new FormData();
-      formData.append("image", file);
-      let token = localStorage.getItem('iimgToken');
-      this.$api.iimg.upload(formData, token)
+      formData.append("file", file);
+      formData.append("Token", '3221d51703b1cd067ee0cc5cd1588a68ac1cbffb:7youod-hskZ27fn4jVlqZpT5OMQ=:eyJkZWFkbGluZSI6MTU4MzkxNTcwMywiYWN0aW9uIjoiZ2V0IiwidWlkIjoiNzEyNDMxIiwiYWlkIjoiMTY3MDE3MiIsImZyb20iOiJmaWxlIn0=');
+      this.$api.imgapi.upload(formData)
         .then(res => {
-          if(res.data.code == 200) {
+          if(res.status == 200) {
             this.uploadSuccess(res, file)
           } else {
             this.$message.warning(res.data.msg)
@@ -170,27 +158,6 @@ export default {
         .catch(err => {
           this.uploadError(err, file)
         });
-    },
-    getIimgToken() {
-      return new Promise((resolve, reject) => {
-        let formData = new FormData();
-        formData.append("email", "691564030@qq.com");
-        formData.append("password", "qx693015");
-        this.$api.iimg.getToken(formData).then(res => {
-            if (res.data.code == 200) {
-              let token = res.data.data.token;
-              localStorage.setItem("iimgToken", token);
-              resolve(res)
-            } else {
-              this.$message.error(res.data.msg);
-              reject(res)
-            }
-          })
-          .catch(err => {
-            this.$message.error(JSON.stringify(err));
-            reject(err)
-          });
-      });
     },
     close() {
       let obj = {
