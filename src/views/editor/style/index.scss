@@ -33,10 +33,19 @@
       width: 33.3333%;
       float: left;
     }
+    .drop-tips {
+      display: none;
+      height: 95px;
+      border: 1px dashed #409EFF;
+      background: rgb(198, 226, 255);line-height: 93px;
+      color: #fff;
+      text-align: center;
+    }
   }
   .component-item {
     border-radius: 4px;
     border: 1px solid #ddd;
+    background-color: #fff;
     height: 95px;
     text-align: center;
     cursor: move;
@@ -51,6 +60,12 @@
     .component-name {
       height: 35px;
       line-height: 25px;
+    }
+  }
+
+  .preview-wrap-list {
+    .component-list-box {
+      display: none;
     }
   }
 
@@ -87,6 +102,21 @@
         &>.vdr {
           border: 0 !important;
         }
+      }
+      .component-list-box {
+        display: block;
+      }
+      .component-item {
+        display: none;
+      }
+      .drop-tips {
+        display: block;
+        height: 95px;
+        border: 1px dashed #409EFF;
+        background: rgb(198, 226, 255);
+        line-height: 93px;
+        color: #fff;
+        text-align: center;
       }
     }
     .transition-group{
@@ -125,6 +155,7 @@
         }
       }
       .component-list-box {
+        display: block;
         height: 50px;
         overflow: hidden;
         .component-name {

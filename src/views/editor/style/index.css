@@ -45,9 +45,20 @@
   float: left;
 }
 
+.editor .component-list .drop-tips {
+  display: none;
+  height: 95px;
+  border: 1px dashed #409EFF;
+  background: #c6e2ff;
+  line-height: 93px;
+  color: #fff;
+  text-align: center;
+}
+
 .editor .component-item {
   border-radius: 4px;
   border: 1px solid #ddd;
+  background-color: #fff;
   height: 95px;
   text-align: center;
   cursor: move;
@@ -66,6 +77,10 @@
 .editor .component-item .component-name {
   height: 35px;
   line-height: 25px;
+}
+
+.editor .preview-wrap-list .component-list-box {
+  display: none;
 }
 
 .editor .preview {
@@ -100,6 +115,24 @@
 
 .editor .preview .preview-list .preview-list-box > .vdr {
   border: 0 !important;
+}
+
+.editor .preview .preview-list .component-list-box {
+  display: block;
+}
+
+.editor .preview .preview-list .component-item {
+  display: none;
+}
+
+.editor .preview .preview-list .drop-tips {
+  display: block;
+  height: 95px;
+  border: 1px dashed #409EFF;
+  background: #c6e2ff;
+  line-height: 93px;
+  color: #fff;
+  text-align: center;
 }
 
 .editor .preview .transition-group {
@@ -147,6 +180,7 @@
 }
 
 .editor .preview .preview-navbar-graggable .component-list-box {
+  display: block;
   height: 50px;
   overflow: hidden;
 }

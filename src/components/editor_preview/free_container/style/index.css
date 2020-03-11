@@ -12,6 +12,10 @@
   border: 0 !important;
 }
 
+.free-container .free-preview-list .component-list-box {
+  display: none !important;
+}
+
 .free-container .vdr .handle {
   border-radius: 50%;
   border: 1px solid #fff;

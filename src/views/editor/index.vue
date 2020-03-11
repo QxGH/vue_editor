@@ -18,7 +18,7 @@
             :sort="false"
             @start="startHandle"
             @end="endHandle"
-            @change="componentsLog"
+            :move="moveHandle"
             :disabled="dragDisabled"
           >
             <template v-for="item in componentsList">
@@ -34,6 +34,7 @@
                   </div>
                   <div class="component-name">{{item.name}}</div>
                 </div>
+                <div class="drop-tips">将组件放置到此处</div>
               </div>
             </template>
           </draggable>
@@ -41,102 +42,118 @@
         <!-- 左侧 list end -->
         <!-- 中间 preview start -->
         <el-main>
-          <div
-            class="preview"
-            :style="{height: showNavbarDragBox || navbarList.length>0 ? '667px' : '617px'}"
+          <draggable
+            class="preview-wrap-list"
+            :list="previewWrapList"
+            group="normal"
+            element="div"
+            dragClass="draggable"
+            :disabled="dragDisabled"
           >
-            <div class="preview-main">
+            <div class="preview-wrap">
               <div
-                class="components-handle"
-                v-show="componentsHandle.show"
-                :style="{'top': componentsHandle.top+'px'}"
+                class="preview"
+                :style="{height: showNavbarDragBox || navbarList.length>0 ? '667px' : '617px'}"
               >
-                <span class="hendle-item" @click="componentsDel">
-                  <i class="el-icon-close"></i>
-                </span>
-                <span class="hendle-item" v-show="componentsHandle.upShow" @click="componentsToUp">
-                  <i class="el-icon-upload2"></i>
-                </span>
-                <span
-                  class="hendle-item"
-                  v-show="componentsHandle.downShow"
-                  @click="componentsToDown"
-                >
-                  <i class="el-icon-download"></i>
-                </span>
-              </div>
-              <vuescroll ref="scroll" :ops="vueScrollOps" @handle-scroll="handleScroll">
-                <draggable
-                  class="preview-list"
-                  :list="previewList"
-                  data-name="previewList"
-                  group="normal"
-                  element="div"
-                  @change="previewLog"
-                  dragClass="draggable"
-                  :disabled="dragDisabled"
-                >
-                  <template v-for="(item, index) in previewList">
-                    <div
-                      class="preview-list-box"
-                      :id="'previewListBox-'+index"
-                      :class="{'isSelect': index === editorIndex}"
-                      :key="item.id"
-                      @click="clickComponent(item, index, $event)"
-                      v-if="item.type != 'free'"
+                <div class="preview-main">
+                  <div
+                    class="components-handle"
+                    v-show="componentsHandle.show"
+                    :style="{'top': componentsHandle.top+'px'}"
+                  >
+                    <span class="hendle-item" @click="componentsDel">
+                      <i class="el-icon-close"></i>
+                    </span>
+                    <span
+                      class="hendle-item"
+                      v-show="componentsHandle.upShow"
+                      @click="componentsToUp"
                     >
-                      <component
-                        :is="item.previewComponent"
-                        :setting="item.setting"
-                        :freeGroup="freeGroup"
-                        :itemIndex="index"
-                        @freeComponentClick="freeComponentClick"
-                        @dragDisabledHandle="dragDisabledHandle"
-                      ></component>
+                      <i class="el-icon-upload2"></i>
+                    </span>
+                    <span
+                      class="hendle-item"
+                      v-show="componentsHandle.downShow"
+                      @click="componentsToDown"
+                    >
+                      <i class="el-icon-download"></i>
+                    </span>
+                  </div>
+                  <vuescroll ref="scroll" :ops="vueScrollOps" @handle-scroll="handleScroll">
+                    <draggable
+                      class="preview-list"
+                      :list="previewList"
+                      data-name="previewList"
+                      group="normal"
+                      element="div"
+                      @change="previewLog"
+                      dragClass="draggable"
+                      :disabled="dragDisabled"
+                      :scroll="true"
+                    >
+                      <template v-for="(item, index) in previewList">
+                        <div
+                          class="preview-list-box"
+                          :id="'previewListBox-'+index"
+                          :class="{'isSelect': index === editorIndex}"
+                          :key="item.id"
+                          @click="clickComponent(item, index, $event)"
+                          v-if="item.type != 'free'"
+                        >
+                          <component
+                            :is="item.previewComponent"
+                            :setting="item.setting"
+                            :freeGroup="freeGroup"
+                            :itemIndex="index"
+                            @freeComponentClick="freeComponentClick"
+                            @dragDisabledHandle="dragDisabledHandle"
+                          ></component>
+                        </div>
+                      </template>
+                    </draggable>
+                  </vuescroll>
+                </div>
+                <div class="preview-navbar" v-if="showNavbarDragBox">
+                  <draggable
+                    class="preview-navbar-graggable"
+                    :list="navbarList"
+                    data-name="navbarList"
+                    group="navbar"
+                    element="div"
+                    @change="navbarLog"
+                    dragClass="draggable"
+                    :disabled="dragDisabled"
+                  >
+                    <template v-for="(item, index) in navbarList">
+                      <div
+                        class="navbar-list-box"
+                        :id="'navbarListBox-'+index"
+                        :class="{'isSelect': selectNavbar}"
+                        :key="item.id"
+                        @click="clickNavbar(item, index)"
+                      >
+                        <component
+                          :is="item.previewComponent"
+                          :setting="item.setting"
+                          @dragDisabledHandle="dragDisabledHandle"
+                        ></component>
+                      </div>
+                    </template>
+                    <template v-if="navbarList.length <= 0">
+                      <div class="navbar-drag-tips">请将底部导航拖动到此处</div>
+                    </template>
+                  </draggable>
+                  <template v-if="showNavbarHandle">
+                    <div class="navbar-handle">
+                      <span class="hendle-item" @click="navbarDel">
+                        <i class="el-icon-close"></i>
+                      </span>
                     </div>
                   </template>
-                </draggable>
-              </vuescroll>
-            </div>
-            <div class="preview-navbar" v-if="showNavbarDragBox">
-              <draggable
-                class="preview-navbar-graggable"
-                :list="navbarList"
-                data-name="navbarList"
-                group="navbar"
-                element="div"
-                @change="navbarLog"
-                dragClass="draggable"
-                :disabled="dragDisabled"
-              >
-                <template v-for="(item, index) in navbarList">
-                  <div
-                    class="navbar-list-box"
-                    :id="'navbarListBox-'+index"
-                    :class="{'isSelect': selectNavbar}"
-                    :key="item.id"
-                    @click="clickNavbar(item, index)"
-                  >
-                    <component
-                      :is="item.previewComponent"
-                      :setting="item.setting"
-                      @dragDisabledHandle="dragDisabledHandle"
-                    ></component>
-                  </div>
-                </template>
-                <template v-if="navbarList.length <= 0">
-                  <div class="navbar-drag-tips">请将底部导航拖动到此处</div>
-                </template>
-              </draggable>
-              <template v-if="showNavbarHandle">
-                <div class="navbar-handle">
-                  <span class="hendle-item" @click="navbarDel">
-                    <i class="el-icon-close"></i>
-                  </span>
                 </div>
-              </template>
+              </div>
             </div>
-          </div>
+          </draggable>
         </el-main>
         <!-- 中间 preview end -->
         <!-- 右侧 setting start -->
@@ -191,7 +208,7 @@ import Divider from "../../components/editor_preview/divider";
 import DividerSetting from "../../components/editor_settings/divider";
 import FreeContainer from "../../components/editor_preview/free_container";
 import FreeTextSetting from "../../components/editor_settings/free_text";
-import FreeImageSetting from "../../components/editor_settings/free_image"
+import FreeImageSetting from "../../components/editor_settings/free_image";
 import Navbar from "../../components/editor_preview/navbar";
 import NavbarSetting from "../../components/editor_settings/navbar";
 
@@ -202,6 +219,7 @@ export default {
   data() {
     return {
       componentsList: [],
+      previewWrapList: [],
       previewList: [],
       previewLogData: {}, // preview 拖动log数据
       previewIndex: "",
@@ -232,7 +250,8 @@ export default {
       freeGroup: "free", // 自由容器 拖动插件组
       showNavbarDragBox: false, // 是否显示底部导航栏区域
       showNavbarHandle: false, // 是否显示nabbar handle
-      dragOffsetData: { // 拖动时offset数据
+      dragOffsetData: {
+        // 拖动时offset数据
         x: 0,
         y: 0
       }
@@ -283,6 +302,7 @@ export default {
       this.CHANGE_EDITOR_INDEX("");
       this.CHANGE_EDITOR_LIST(editorList);
       this.previewList = editorList;
+      this.componentsHandle.show = false;
       this.$message.success("删除成功");
     },
     componentsToUp() {
@@ -316,7 +336,7 @@ export default {
       console.log(this.previewList);
     },
     clickComponent(item, index, evt) {
-      console.log('clickComponent')
+      console.log("clickComponent");
       // console.log(item)
       // console.log(evt)
       // 点击组件
@@ -328,30 +348,33 @@ export default {
 
       if (item.label == "freeContainer") {
         // 当前点击的是 自由容器，包括自由组件
-        console.log('当前点击的是 自由容器，包括自由组件')
-        if(evt) {
+        console.log("当前点击的是 自由容器，包括自由组件");
+        if (evt) {
           // dom 点击事件 或者冒泡事件
-          console.log('dom 点击事件 或者冒泡事件')
-          if(evt.target.classList.contains('free-preview-list')) {
+          console.log("dom 点击事件 或者冒泡事件");
+          if (evt.target.classList.contains("free-preview-list")) {
             // 点击的是 自由容器
-            console.log('点击的是 自由容器')
-            this.settingComponent = ''
+            console.log("点击的是 自由容器");
+            this.settingComponent = "";
           } else {
             // 点击的是 自由组件
-            console.log('点击的是 自由组件')
-            this.settingComponent = item.setting.children[this.settingFreeComponentIndex].settingComponent;
-          };
+            console.log("点击的是 自由组件");
+            this.settingComponent =
+              item.setting.children[
+                this.settingFreeComponentIndex
+              ].settingComponent;
+          }
         } else {
           // init 事件
-          console.log('init')
+          console.log("init");
           // this.settingComponent = ''
           this.settingComponent = item.setting.children[0].settingComponent;
-        };
+        }
       } else {
-        console.log('! 当前点击的是 自由容器，包括自由组件')
+        console.log("! 当前点击的是 自由容器，包括自由组件");
         this.settingComponent = item.settingComponent;
-        this.settingFreeComponentIndex = ''; // 自由组件 setting index
-      };
+        this.settingFreeComponentIndex = ""; // 自由组件 setting index
+      }
       // 显示 handle
       let id = `previewListBox-${index}`;
       // console.log(document.getElementById(id).offsetTop)
@@ -384,18 +407,13 @@ export default {
     },
     navbarDel() {
       // 删除navbar
-      this.showNavbarDragBox = false; 
+      this.showNavbarDragBox = false;
       this.settingComponent = ""; // 配置页重置
       this.$nextTick(() => {
         let navbarList = [];
         this.navbarList = navbarList;
-        this.CHANGE_NAVBAR_LIST(navbarList)
+        this.CHANGE_NAVBAR_LIST(navbarList);
       });
-    },
-    componentsLog(evt) {
-      // console.log(evt);
-      // console.log(this.componentsList)
-      // console.log(this.previewList)
     },
     previewLog(evt) {
       this.previewLogData = evt.added;
@@ -405,12 +423,12 @@ export default {
       this.CHANGE_NAVBAR_LIST(this.navbarList);
     },
     startHandle(val) {
-      console.log('startHandle val')
-      console.log(val)
+      console.log("startHandle val");
+      console.log(val);
       this.dragOffsetData = {
         x: val.originalEvent.offsetX,
         y: val.originalEvent.offsetY
-      }
+      };
       // console.log(val.item.dataset.type)
       if (val.item.dataset.type == "free") {
         // this.listGroupOption.name = 'free'
@@ -484,7 +502,7 @@ export default {
                 previewComponent: "FreeImage",
                 settingComponent: "FreeImageSetting",
                 setting: {
-                  imageID: 'default',
+                  imageID: "default",
                   imageUrl: "https://qxtodo.com/editor/animation_wallpaper.jpg",
                   width: 100,
                   height: 100,
@@ -521,17 +539,21 @@ export default {
           this.previewList = editorList;
           this.settingFreeComponentIndex = 0; // 默认选中第一个自由组件
           this.$nextTick(() => {
-            this.clickComponent(this.editorList[val.newIndex], val.newIndex, '');
+            this.clickComponent(
+              this.editorList[val.newIndex],
+              val.newIndex,
+              ""
+            );
           });
         } else {
           // 普通组件拖动到普通容器
           // 默认选中
-          this.clickComponent(this.editorList[val.newIndex], val.newIndex, '');
+          this.clickComponent(this.editorList[val.newIndex], val.newIndex, "");
         }
       } else if (val.to.dataset.name === "freePreviewDrag") {
         // 自由组件拖动到自由容器
         let offsetX = val.originalEvent.offsetX - this.dragOffsetData.x,
-        offsetY = val.originalEvent.offsetY - this.dragOffsetData.y
+          offsetY = val.originalEvent.offsetY - this.dragOffsetData.y;
 
         let setting = editorList[editorIndex].setting;
         let label = val.item.dataset.label;
@@ -541,8 +563,8 @@ export default {
               ...item,
               id: uuidV4()
             };
-            obj.setting.x = offsetX
-            obj.setting.y = offsetY
+            obj.setting.x = offsetX;
+            obj.setting.y = offsetY;
             obj.setting.z = setting.children.length + 1;
             setting.children.push(obj);
             break;
@@ -588,18 +610,23 @@ export default {
       // console.log(newObj);
       return newObj;
     },
+    moveHandle(obj) {
+      console.log("move");
+      console.log(obj);
+    },
     dragDisabledHandle(val) {
       // 自由组件拖动时  禁止其他拖动操作
       this.dragDisabled = val;
       // console.log(`disabled ${val}`)
     },
     freeComponentClick(val) {
-      console.log('freeComponentClick')
+      console.log("freeComponentClick");
       // 自由组件被点击时
       let editorList = this.deepClone(this.editorList);
       let editorIndex = this.editorIndex;
       this.settingFreeComponentIndex = val;
-      this.settingComponent = editorList[editorIndex].setting.children[val].settingComponent;
+      this.settingComponent =
+        editorList[editorIndex].setting.children[val].settingComponent;
     },
     fillContainer() {
       // 优化自由组件放置
