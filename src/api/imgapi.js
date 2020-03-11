@@ -3,7 +3,11 @@ import axios from '@/http'; // 导入http中创建的axios实例
 
 const iimg = {
   upload(formData) {
-    return axios.post(`${base.uploadImg}/`, formData);
+    return axios.post(`${base.uploadImg}/image.ali`, formData, {
+      headers: {
+        'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryuNl5vDgZ1PlpBttj'
+      }
+    });
   }
 }
 

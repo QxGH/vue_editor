@@ -126,7 +126,7 @@ export default {
       return false;
     },
     uploadSuccess(res, file) {
-      let url = res.data.linkurl;
+      let url = res.data.imgurl;
       let obj = {
         id: uuidV4(),
         isSelect: false,
@@ -145,11 +145,11 @@ export default {
     uploading(file){
       this.loading = true;
       let formData = new FormData();
-      formData.append("file", file);
-      formData.append("Token", '3221d51703b1cd067ee0cc5cd1588a68ac1cbffb:7youod-hskZ27fn4jVlqZpT5OMQ=:eyJkZWFkbGluZSI6MTU4MzkxNTcwMywiYWN0aW9uIjoiZ2V0IiwidWlkIjoiNzEyNDMxIiwiYWlkIjoiMTY3MDE3MiIsImZyb20iOiJmaWxlIn0=');
+      formData.append('Filedata', file);
+      formData.append('file', 'multipart');
       this.$api.imgapi.upload(formData)
         .then(res => {
-          if(res.status == 200) {
+          if(res.data.code === 1) {
             this.uploadSuccess(res, file)
           } else {
             this.$message.warning(res.data.msg)
