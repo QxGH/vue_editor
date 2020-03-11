@@ -136,7 +136,6 @@ export default {
       imageList.push(obj);
       this.imageList = imageList;
       localStorage.setItem("imageList", JSON.stringify(imageList));
-      this.loading = false;
     },
     uploadError(err, file) {
       this.loading = false;
@@ -149,6 +148,7 @@ export default {
       formData.append('file', 'multipart');
       this.$api.imgapi.upload(formData)
         .then(res => {
+          this.loading = false;
           if(res.data.code === 1) {
             this.uploadSuccess(res, file)
           } else {
