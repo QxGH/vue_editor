@@ -13,7 +13,19 @@
 }
 
 .free-container .free-preview-list .component-list-box {
-  display: none !important;
+  height: 100% !important;
+  display: -webkit-flex;
+  /* Safari */
+  -webkit-align-items: center;
+  /* Safari 7.0+ */
+  display: flex;
+  align-items: center;
+}
+
+.free-container .free-preview-list .component-list-box .drop-tips {
+  height: 100% !important;
+  width: 100%;
+  flex: 1;
 }
 
 .free-container .vdr .handle {

@@ -1,5 +1,5 @@
 <template>
-  <vdr class="free-container" :w="parentWidth" :h="parentHeight" :draggable="false" :handles="['bm']" @resizing="parentResize">
+  <vdr class="free-container free-wrap" :w="parentWidth" :h="parentHeight" :min-height="100" :draggable="false" :handles="['bm']" @resizing="parentResize">
     <div style="width: 100%;height: 100%;">
       <Contextmenu ref="contextmenu" @contextmenu="handleContextmenu">
         <ContextmenuItem :disabled="contextMenuDisabled.toTop" @click="contextMenuToTop">置于顶层</ContextmenuItem>
@@ -33,6 +33,8 @@
             :data-x="item.setting.x"
             :data-y="item.setting.y"
             :data-index="index"
+            :min-height="50"
+            :min-width="50"
             @dragging="onDrag(index, arguments)"
             @resizing="onResize(index, arguments)"
             @activated="onActivated(item, index)"

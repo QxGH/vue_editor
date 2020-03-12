@@ -7,10 +7,12 @@ let config = {
     devServer: {
         host: "0.0.0.0",
         port: 8088,
-        https: false
+        https: false,
+        disableHostCheck: true
     },
     configureWebpack: {
-        externals: {}
+        externals: {},
+        devtool: 'source-map'
     }
 };
 

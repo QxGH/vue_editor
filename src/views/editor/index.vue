@@ -34,7 +34,9 @@
                   </div>
                   <div class="component-name">{{item.name}}</div>
                 </div>
-                <div class="drop-tips">将组件放置到此处</div>
+                <div class="drop-tips">
+                  <span class="tips-text">将组件放置到此处</span>
+                </div>
               </div>
             </template>
           </draggable>
@@ -55,7 +57,7 @@
                 class="preview"
                 :style="{height: showNavbarDragBox || navbarList.length>0 ? '667px' : '617px'}"
               >
-                <div class="preview-main">
+                <div class="preview-main" ref="previewMain">
                   <div
                     class="components-handle"
                     v-show="componentsHandle.show"
@@ -312,6 +314,7 @@ export default {
       const temp = editorList[editorIndex];
       editorList[editorIndex] = editorList[editorIndex - 1];
       editorList[editorIndex - 1] = temp;
+      this.componentsHandle.show = false;
       this.previewList = editorList;
       this.CHANGE_EDITOR_LIST(editorList);
     },
@@ -322,6 +325,7 @@ export default {
       const temp = editorList[editorIndex];
       editorList[editorIndex] = editorList[editorIndex + 1];
       editorList[editorIndex + 1] = temp;
+      this.componentsHandle.show = false;
       this.previewList = editorList;
       this.CHANGE_EDITOR_LIST(editorList);
     },
@@ -359,19 +363,39 @@ export default {
           } else {
             // 点击的是 自由组件
             console.log("点击的是 自由组件");
-            this.settingComponent =
-              item.setting.children[
-                this.settingFreeComponentIndex
-              ].settingComponent;
+            console.log(item);
+            if (
+              item.setting.children[this.settingFreeComponentIndex]
+                && item.setting.children[this.settingFreeComponentIndex]
+                .settingComponent
+            ) {
+              // 没有 settingComponent 不赋值
+              this.settingComponent =
+                item.setting.children[
+                  this.settingFreeComponentIndex
+                ].settingComponent;
+            }
           }
         } else {
           // init 事件
-          console.log("init");
+          console.log("当前是 init 事件,不是DOM点击");
+          console.log(item);
           // this.settingComponent = ''
-          this.settingComponent = item.setting.children[0].settingComponent;
+          // if (item.type == "freeContainer") {
+          //   console.log("当前拖入的是空 自由容器");
+          //   this.settingComponent = "";
+          // } else {
+          //   console.log("当前拖入的是需要包裹自由容器的自由组件");
+          //   this.settingComponent = item.setting.children[0].settingComponent;
+          // }
+          if(item.setting.children[0] && item.setting.children[0].settingComponent) {
+            this.settingComponent = item.setting.children[0].settingComponent;
+          } else {
+            this.settingComponent = "";
+          }
         }
       } else {
-        console.log("! 当前点击的是 自由容器，包括自由组件");
+        console.log("当前点击的是不自由容器");
         this.settingComponent = item.settingComponent;
         this.settingFreeComponentIndex = ""; // 自由组件 setting index
       }
@@ -382,6 +406,7 @@ export default {
       let scrollTop = this.$refs["scroll"].scrollPanelElm
         ? this.$refs["scroll"].scrollPanelElm.scrollTop
         : 0;
+      console.log(id);
       let top = document.getElementById(id).offsetTop - scrollTop;
       this.componentsHandle.top = top > 539 ? 539 : top;
       this.componentsHandle.show = true;
@@ -461,14 +486,13 @@ export default {
           }
         }
       }
-
       // 放置容器
       if (val.to.dataset.name === "previewList") {
         // 组件拖动到普通容器
         if (this.previewLogData.element.type === "free") {
           // 自由组件拖动到普通容器
           // newIndex
-          editorList.splice(editorList.length - 1, 1);
+          editorList.splice(val.newIndex, 1);
           let obj = {
             id: uuidV4(),
             label: "freeContainer",
@@ -535,7 +559,8 @@ export default {
               }
             ];
           }
-          editorList.push(obj);
+          // editorList.push(obj);
+          editorList.splice(val.newIndex, 0, obj);
           this.previewList = editorList;
           this.settingFreeComponentIndex = 0; // 默认选中第一个自由组件
           this.$nextTick(() => {
@@ -552,8 +577,20 @@ export default {
         }
       } else if (val.to.dataset.name === "freePreviewDrag") {
         // 自由组件拖动到自由容器
-        let offsetX = val.originalEvent.offsetX - this.dragOffsetData.x,
-          offsetY = val.originalEvent.offsetY - this.dragOffsetData.y;
+        let offsetX = 0, offsetY = 0;
+        offsetX = val.originalEvent.pageX - this.$refs.previewMain.offsetLeft + 1 - this.dragOffsetData.x;
+        offsetY = val.originalEvent.pageY - this.$refs.previewMain.offsetTop + 1 - this.dragOffsetData.y;
+
+        if (offsetX < 0) {
+          offsetX = 0;
+        } else if (offsetX > val.to.offsetWidth - 100) {
+          offsetX = val.to.offsetWidth - 100;
+        }
+        if (offsetY < 0) {
+          offsetY = 0;
+        } else if (offsetY > val.to.offsetHeight - 100) {
+          offsetY = val.to.offsetHeight - 100;
+        };
 
         let setting = editorList[editorIndex].setting;
         let label = val.item.dataset.label;
@@ -565,6 +602,9 @@ export default {
             };
             obj.setting.x = offsetX;
             obj.setting.y = offsetY;
+            console.log(val);
+            console.log(offsetX);
+            console.log(offsetY);
             obj.setting.z = setting.children.length + 1;
             setting.children.push(obj);
             break;

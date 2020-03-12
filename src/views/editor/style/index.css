@@ -107,6 +107,7 @@
 .editor .preview .preview-list .preview-list-box {
   cursor: move;
   position: relative;
+  border-bottom: 1px dashed #d6d6d6;
 }
 
 .editor .preview .preview-list .preview-list-box.isSelect {
