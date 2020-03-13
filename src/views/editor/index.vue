@@ -58,29 +58,33 @@
                 :style="{height: showNavbarDragBox || navbarList.length>0 ? '667px' : '617px'}"
               >
                 <div class="preview-main" ref="previewMain">
-                  <div
-                    class="components-handle"
-                    v-show="componentsHandle.show"
-                    :style="{'top': componentsHandle.top+'px'}"
-                  >
-                    <span class="hendle-item" @click="componentsDel">
-                      <i class="el-icon-close"></i>
-                    </span>
-                    <span
-                      class="hendle-item"
-                      v-show="componentsHandle.upShow"
-                      @click="componentsToUp"
+                  <transition name="el-fade-in">
+                    <div
+                      class="components-handle"
+                      v-show="componentsHandle.show"
+                      :style="{'top': componentsHandle.top+'px'}"
+                      @mouseover="mouseoverHandle"
+                      @mouseout="mouseoutHandle"
                     >
-                      <i class="el-icon-upload2"></i>
-                    </span>
-                    <span
-                      class="hendle-item"
-                      v-show="componentsHandle.downShow"
-                      @click="componentsToDown"
-                    >
-                      <i class="el-icon-download"></i>
-                    </span>
-                  </div>
+                      <span class="hendle-item" @click="componentsDel">
+                        <i class="el-icon-close"></i>
+                      </span>
+                      <span
+                        class="hendle-item"
+                        v-show="componentsHandle.upShow"
+                        @click="componentsToUp"
+                      >
+                        <i class="el-icon-upload2"></i>
+                      </span>
+                      <span
+                        class="hendle-item"
+                        v-show="componentsHandle.downShow"
+                        @click="componentsToDown"
+                      >
+                        <i class="el-icon-download"></i>
+                      </span>
+                    </div>
+                  </transition>
                   <vuescroll ref="scroll" :ops="vueScrollOps" @handle-scroll="handleScroll">
                     <draggable
                       class="preview-list"
@@ -100,6 +104,8 @@
                           :class="{'isSelect': index === editorIndex}"
                           :key="item.id"
                           @click="clickComponent(item, index, $event)"
+                          @mouseover="mouseoverComponenter(item, index, $event)"
+                          @mouseout="mouseoutComponenter(item, index, $event)"
                           v-if="item.type != 'free'"
                         >
                           <component
@@ -339,6 +345,38 @@ export default {
       this.previewIndex = this.editorIndex;
       console.log(this.previewList);
     },
+    mouseoverHandle(){
+      this.componentsHandle.show = true;
+    },
+    mouseoutHandle(){
+      this.componentsHandle.show = false;
+    },
+    mouseoverComponenter (item, index, evt){
+      // 鼠标移入组件事件
+      // 显示 handle
+      let id = `previewListBox-${index}`;
+      // console.log(document.getElementById(id).offsetTop)
+      // console.log(this.$refs['scroll'].scrollPanelElm.scrollTop)
+      let scrollTop = this.$refs["scroll"].scrollPanelElm
+        ? this.$refs["scroll"].scrollPanelElm.scrollTop
+        : 0;
+      console.log(id);
+      let top = document.getElementById(id).offsetTop - scrollTop;
+      this.componentsHandle.top = top > 539 ? 539 : top;
+      this.componentsHandle.show = true;
+      this.componentsHandle.upShow = true;
+      this.componentsHandle.downShow = true;
+      if (index == 0) {
+        this.componentsHandle.upShow = false;
+      }
+      if (index == this.editorList.length - 1) {
+        this.componentsHandle.downShow = false;
+      }
+    },
+    mouseoutComponenter (item, index, evt){
+      // 鼠标移出组件事件
+      this.componentsHandle.show = false;
+    },
     clickComponent(item, index, evt) {
       console.log("clickComponent");
       // console.log(item)
@@ -398,25 +436,6 @@ export default {
         console.log("当前点击的是不自由容器");
         this.settingComponent = item.settingComponent;
         this.settingFreeComponentIndex = ""; // 自由组件 setting index
-      }
-      // 显示 handle
-      let id = `previewListBox-${index}`;
-      // console.log(document.getElementById(id).offsetTop)
-      // console.log(this.$refs['scroll'].scrollPanelElm.scrollTop)
-      let scrollTop = this.$refs["scroll"].scrollPanelElm
-        ? this.$refs["scroll"].scrollPanelElm.scrollTop
-        : 0;
-      console.log(id);
-      let top = document.getElementById(id).offsetTop - scrollTop;
-      this.componentsHandle.top = top > 539 ? 539 : top;
-      this.componentsHandle.show = true;
-      this.componentsHandle.upShow = true;
-      this.componentsHandle.downShow = true;
-      if (index == 0) {
-        this.componentsHandle.upShow = false;
-      }
-      if (index == this.editorList.length - 1) {
-        this.componentsHandle.downShow = false;
       }
     },
     clickNavbar(item, index) {
