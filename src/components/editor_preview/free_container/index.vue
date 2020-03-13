@@ -176,7 +176,7 @@ export default {
         z: 1
       },
       watchSettingLater: null, // 监听 props setting 变化赋值定时器
-      isResizing: false // 正在 缩放
+      keyDownIndex: null
     };
   },
   methods: {
@@ -317,7 +317,6 @@ export default {
       }, 300);
     },
     onResize(index, [x, y, width, height]) {
-      this.isResizing = true;
       console.log("onResize");
       this.containerList[index].setting.x = x;
       this.containerList[index].setting.y = y;
@@ -463,13 +462,16 @@ export default {
         this.submitLater = null;
       }, 300);
     },
-    keydown(event, index) {
+    keydown(event) {
+      console.log('keydown')
       // 上下左右键 移动组件
       var e = event || window.event || arguments.callee.caller.arguments[0];
       e.preventDefault();
+      const index = this.keyDownIndex;
       
       let x = this.containerList[index].setting.x;
       let y = this.containerList[index].setting.y;
+      console.log(index)
 
       if (e && e.keyCode == 37) {
         // 左键 
@@ -511,7 +513,8 @@ export default {
       this.$emit("dragDisabledHandle", true);
       this.dragDisabled = true;
       this.$emit("freeComponentClick", index);
-      window.addEventListener("keydown", () => {this.keydown(event, index)});
+      this.keyDownIndex = JSON.parse(JSON.stringify(index))
+      window.addEventListener("keydown", this.keydown);
     },
     onDeactivated() {
       // this.active = false
