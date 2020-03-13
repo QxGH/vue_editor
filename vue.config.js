@@ -11,7 +11,9 @@ let config = {
         disableHostCheck: true
     },
     configureWebpack: {
-        externals: {},
+        externals: {
+            // 'vue-draggable-resizable-gorkys': 'VueDraggableResizable'
+        },
         devtool: 'source-map'
     }
 };

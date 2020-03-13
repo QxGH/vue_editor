@@ -1,5 +1,13 @@
 <template>
-  <vdr class="free-container free-wrap" :w="parentWidth" :h="parentHeight" :min-height="100" :draggable="false" :handles="['bm']" @resizing="parentResize">
+  <vdr
+    class="free-container free-wrap"
+    :w="parentWidth"
+    :h="parentHeight"
+    :min-height="100"
+    :draggable="false"
+    :handles="['bm']"
+    @resizing="parentResize"
+  >
     <div style="width: 100%;height: 100%;">
       <Contextmenu ref="contextmenu" @contextmenu="handleContextmenu">
         <ContextmenuItem :disabled="contextMenuDisabled.toTop" @click="contextMenuToTop">置于顶层</ContextmenuItem>
@@ -41,30 +49,41 @@
             @deactivated="onDeactivated"
             :parent="true"
             :snap="true"
-            :snapTolerance="10"
+            :snapTolerance="5"
             @refLineParams="getRefLineParams"
             :isConflictCheck="false"
             v-contextmenu:contextmenu
           >
-            <div class="component-wrap" @mouseover="mouseOverHandle" @mouseout="mouseOutHandle">
-              <component :is="item.previewComponent" :setting="item.setting" @refreshState="tellParentRefresh"></component>
+            <div
+              class="component-wrap"
+              @mouseover="mouseOverHandle"
+              @mouseout="mouseOutHandle"
+              @mouseup="componentsClick"
+            >
+              <component
+                :is="item.previewComponent"
+                :setting="item.setting"
+                @refreshState="tellParentRefresh"
+              ></component>
             </div>
           </vdr>
         </template>
         <!-- 辅助线 start -->
         <template>
+          <!-- 纵向 -->
           <span
             class="ref-line v-line"
             v-for="(item, index) in vLine"
             v-show="item.display"
-            :style="{ left: item.position, top: item.origin, height: item.lineLength}"
+            :style="{ left: item.position, top: item.origin, height: item.lineLength, zIndex: 9999+index}"
             :key="'v-line'+index"
           ></span>
+          <!-- 横向 -->
           <span
             class="ref-line h-line"
             v-for="(item, index) in hLine"
             v-show="item.display"
-            :style="{ top: item.position, left: item.origin, width: item.lineLength}"
+            :style="{ top: item.position, left: item.origin, width: item.lineLength, zIndex: 9999+index}"
             :key="'h-line'+index"
           ></span>
           <!-- 辅助线 end -->
@@ -82,18 +101,18 @@ import vdr from "vue-draggable-resizable-gorkys";
 
 import { mapState, mapMutations } from "vuex";
 
-import {directive,
-    Contextmenu,
-    ContextmenuItem,
-    ContextmenuSubmenu,
-    ContextmenuGroup
-    } from 'v-contextmenu'
-import 'v-contextmenu/dist/index.css'
+import {
+  directive,
+  Contextmenu,
+  ContextmenuItem,
+  ContextmenuSubmenu,
+  ContextmenuGroup
+} from "v-contextmenu";
+import "v-contextmenu/dist/index.css";
 
 import FreeFill from "../../../components/editor_preview/free_fill";
 import FreeImage from "../../../components/editor_preview/free_image";
 import FreeText from "../../../components/editor_preview/free_text";
-
 
 export default {
   name: "freeContainer",
@@ -110,26 +129,26 @@ export default {
     ContextmenuGroup
   },
   directives: {
-    contextmenu: directive,
+    contextmenu: directive
   },
   computed: {
     ...mapState(["editorList", "editorIndex"])
   },
-  props: ["itemIndex",'setting','freeGroup'],
+  props: ["itemIndex", "setting", "freeGroup"],
   watch: {
-    'setting.children': {
+    "setting.children": {
       immediate: true,
       deep: true,
-      handler (val) {
+      handler(val) {
         // console.log('watch - setting.children')
         // console.log(val)
-        if(this.watchSettingLater) {
-          clearTimeout(this.watchSettingLater)
+        if (this.watchSettingLater) {
+          clearTimeout(this.watchSettingLater);
           this.watchSettingLater = null;
-        };
+        }
         this.watchSettingLater = setTimeout(() => {
           this.containerList = this.deepClone(val);
-          clearTimeout(this.watchSettingLater)
+          clearTimeout(this.watchSettingLater);
           this.watchSettingLater = null;
         }, 100);
       }
@@ -139,7 +158,7 @@ export default {
     return {
       parentWidth: 375,
       parentHeight: 300,
-      windowResizeLater: null,  // 自由容器大小变化定时器
+      windowResizeLater: null, // 自由容器大小变化定时器
       containerList: [],
       containerListClone: [],
       submitLater: null,
@@ -156,7 +175,8 @@ export default {
         key: 0,
         z: 1
       },
-      watchSettingLater: null,  // 监听 props setting 变化赋值定时器
+      watchSettingLater: null, // 监听 props setting 变化赋值定时器
+      isResizing: false // 正在 缩放
     };
   },
   methods: {
@@ -164,15 +184,15 @@ export default {
     log(evt) {
       console.log("free-container change log");
       // console.log(this.editorList[this.itemIndex].setting.children);
-      console.log(evt)
+      console.log(evt);
     },
     // 右键点击事件
-    handleContextmenu(vnode){
+    handleContextmenu(vnode) {
       // let index = vnode.data.attrs.dataIndex;
       // let z = vnode.data.attrs.dataZ;
       let index = Number(vnode.elm.dataset.index);
       let z = Number(vnode.elm.dataset.z);
-      
+
       // this.contextMenuProps.key = vnode.key;
       this.contextMenuProps.key = index;
       this.contextMenuProps.z = z;
@@ -182,110 +202,110 @@ export default {
       this.contextMenuDisabled.toBottom = false;
       this.contextMenuDisabled.toTop = false;
       this.contextMenuDisabled.toUp = false;
-      if(z == 1) {
+      if (z == 1) {
         this.contextMenuDisabled.toDown = true;
         this.contextMenuDisabled.toBottom = true;
-      } else if(z == this.containerList.length) {
+      } else if (z == this.containerList.length) {
         this.contextMenuDisabled.toTop = true;
         this.contextMenuDisabled.toUp = true;
-      };
+      }
     },
     // 右键菜单点击选项事件
-    contextMenuToTop(){
+    contextMenuToTop() {
       // 置于顶层
       // console.log(this.contextMenuProps)
       // console.log(this.containerList)
       let containerList = this.containerList;
       let key = this.contextMenuProps.key;
-      for(let i=key+1; i<containerList.length; i++){
+      for (let i = key + 1; i < containerList.length; i++) {
         containerList[i].setting.z--;
-      };
+      }
       containerList[key].setting.z = containerList.length;
       this.containerList = this.containerListSort(containerList);
       this.submit();
     },
-    contextMenuToUp(){
+    contextMenuToUp() {
       // 上移一层
       let containerList = this.containerList;
       let key = this.contextMenuProps.key;
       containerList[key].setting.z++;
-      containerList[key+1].setting.z--;
+      containerList[key + 1].setting.z--;
       let newContainerList = this.containerListSort(containerList);
-      console.log('上移一层')
-      console.log(newContainerList)
+      console.log("上移一层");
+      console.log(newContainerList);
       this.containerList = newContainerList;
       this.submit();
     },
-    contextMenuToDown(){
+    contextMenuToDown() {
       // 下移一层
       let containerList = this.containerList;
       let key = this.contextMenuProps.key;
       containerList[key].setting.z--;
-      containerList[key-1].setting.z++;
+      containerList[key - 1].setting.z++;
       let newContainerList = this.containerListSort(containerList);
-      console.log('下移一层')
-      console.log(newContainerList)
+      console.log("下移一层");
+      console.log(newContainerList);
       this.containerList = newContainerList;
       this.submit();
     },
-    contextMenuToBottom(){
+    contextMenuToBottom() {
       // 置于底部
       let containerList = this.containerList;
       let key = this.contextMenuProps.key;
-      for(let i=0; i<key; i++){
+      for (let i = 0; i < key; i++) {
         containerList[i].setting.z++;
-      };
+      }
       containerList[key].setting.z = 1;
       this.containerList = this.containerListSort(containerList);
       this.submit();
     },
     containerListSort(list) {
       // 根据 z 轴 排序组件
-      for (let i=0; i < list.length-1; i++) {
-        for (let j=0; j < list.length-1-i; j++) {
-          if (list[j].setting.z > list[j+1].setting.z) {
+      for (let i = 0; i < list.length - 1; i++) {
+        for (let j = 0; j < list.length - 1 - i; j++) {
+          if (list[j].setting.z > list[j + 1].setting.z) {
             let temp = list[j];
             list[j] = list[j + 1];
             list[j + 1] = temp;
           }
         }
-      };
+      }
       return list;
     },
-    contextMenuCopy(){
+    contextMenuCopy() {
       // 复制自由组件
       let containerList = this.containerList;
       let key = this.contextMenuProps.key;
       let obj = this.deepClone(containerList[key]);
       obj.id = uuidV4();
-      obj.setting.z = containerList.length+1;
+      obj.setting.z = containerList.length + 1;
       containerList.push(obj);
       this.containerList = this.containerListSort(containerList);
-      this.$message.success('复制成功！');
+      this.$message.success("复制成功！");
       this.submit();
     },
-    contextMenuDel(){
+    contextMenuDel() {
       // 删除自由组件
       let containerList = this.containerList;
       let key = this.contextMenuProps.key;
       containerList.splice(key, 1);
-      for(let i=0; i<containerList.length; i++){
-        containerList[i].setting.z = i+1;
-      };
+      for (let i = 0; i < containerList.length; i++) {
+        containerList[i].setting.z = i + 1;
+      }
       this.containerList = containerList;
-      this.$message.success('删除成功！');
+      this.$message.success("删除成功！");
       this.submit();
     },
     parentResize(x, y, w, h) {
-      if(this.windowResizeLater) {
+      if (this.windowResizeLater) {
         clearTimeout(this.windowResizeLater);
         this.windowResizeLater = null;
-      };
+      }
       this.parentHeight = h;
       this.windowResizeLater = setTimeout(() => {
-        let resizeEvent = new Event('resize');
+        let resizeEvent = new Event("resize");
         window.dispatchEvent(resizeEvent);
-        console.log(h)
+        console.log(h);
         console.log(this.parentHeight);
         let editorList = this.deepClone(this.editorList);
         let editorIndex = this.deepClone(this.editorIndex);
@@ -297,12 +317,127 @@ export default {
       }, 300);
     },
     onResize(index, [x, y, width, height]) {
+      this.isResizing = true;
       console.log("onResize");
       this.containerList[index].setting.x = x;
       this.containerList[index].setting.y = y;
       this.containerList[index].setting.width = width;
       this.containerList[index].setting.height = height;
-      this.submit()
+      this.onResizeSnap(index, x, y, width, height);
+      this.submit();
+    },
+    onResizeSnap(index, x, y, width, height) {
+      // 拖动大小时添加辅助线
+      this.vLine = [];
+      this.hLine = [];
+      // let refLine = {
+      //   vLine: [],  // 竖线
+      //   hLine: []   // 横线
+      // };
+      let vLine = [], // 竖线
+        hLine = []; // 横线
+      let left = x,
+        center = x + width / 2,
+        right = x + width;
+      let top = y,
+        middle = y + height / 2,
+        bottom = y + height;
+      console.log("onResizeSnap");
+      for (let [itemIndex, item] of this.containerList.entries()) {
+        let setting = item.setting;
+        let x_ = setting.x,
+          y_ = setting.y,
+          width_ = setting.width,
+          height_ = setting.height;
+        if (itemIndex !== index) {
+          let left_ = x_,
+            center_ = x_ + width_ / 2,
+            right_ = x_ + width_;
+          let top_ = y_,
+            middle_ = y_ + height_ / 2,
+            bottom_ = y_ + height_;
+
+          // vLine
+          let vLineLength = y < y_ ? y_ - y + height : y - y_ + height;
+          if (left >= left_-1 && left <= left_+1) {
+            // 吸附
+            // left = left_
+            // this.containerList[index].setting.x = left_;
+            // this.containerList[index].id = uuidV4();
+
+            let posTop = y < y_ ? y : y_;
+            let posLeft = x < x_ ? x : x_;
+            vLine.push({
+              display: true, // 是否显示
+              position: `${posLeft}px`, // hLine-top  vLine-left
+              origin: `${posTop}px`, // hLine-left vLine-top
+              lineLength: `${vLineLength}px` // width \ height
+            });
+          } else {
+            // this.containerList[index].setting.x = x;
+            // this.containerList[index].id = uuidV4();
+          }
+          if (center >= center_-1 && center <= center_+1) {
+            let posTop = y < y_ ? y : y_;
+            let posLeft = x + width / 2;
+            vLine.push({
+              display: true, // 是否显示
+              position: `${posLeft}px`, // hLine-top  vLine-left
+              origin: `${posTop}px`, // hLine-left vLine-top
+              lineLength: `${vLineLength}px` // width \ height
+            });
+          }
+          if (right >= right_-1 && right <= right_+1) {
+            let posTop = y < y_ ? y : y_;
+            let posLeft = x < x_ ? x + width : x_ + width;
+            vLine.push({
+              display: true, // 是否显示
+              position: `${posLeft}px`, // hLine-top  vLine-left
+              origin: `${posTop}px`, // hLine-left vLine-top
+              lineLength: `${vLineLength}px` // width \ height
+            });
+          }
+
+          // hLine
+          let hLineLength = x < x_ ? x_ - x + width : x - x_ + width;
+          if (top >= top_-1 && top <= top_+1) {
+            let posTop = y < y_ ? y : y_;
+            let posLeft = x < x_ ? x : x_;
+            hLine.push({
+              display: true, // 是否显示
+              position: `${posTop}px`, // hLine-top  vLine-left
+              origin: `${posLeft}px`, // hLine-left vLine-top
+              lineLength: `${hLineLength}px` // width \ height
+            });
+          }
+          if (middle >= middle_-1 && middle <= middle_+1) {
+            let posTop = y < y_ ? y + height / 2 : y_ + height / 2;
+            let posLeft = x < x_ ? x : x_;
+            hLine.push({
+              display: true, // 是否显示
+              position: `${posTop}px`, // hLine-top  vLine-left
+              origin: `${posLeft}px`, // hLine-left vLine-top
+              lineLength: `${hLineLength}px` // width \ height
+            });
+          }
+          if (bottom >= bottom_-1 && bottom <= bottom_+1) {
+            let posTop = y < y_ ? y + height : y_ + height;
+            let posLeft = x < x_ ? x : x_;
+            hLine.push({
+              display: true, // 是否显示
+              position: `${posTop}px`, // hLine-top  vLine-left
+              origin: `${posLeft}px`, // hLine-left vLine-top
+              lineLength: `${hLineLength}px` // width \ height
+            });
+          }
+        }
+      }
+      this.vLine = vLine;
+      this.hLine = hLine;
+      // console.log("vLine");
+      // console.log(vLine);
+      // console.log("hLine");
+      // console.log(hLine);
     },
     onDrag(index, [x, y]) {
       this.containerList[index].setting.x = x;
@@ -310,17 +445,17 @@ export default {
       console.log("onDrag");
       // console.log(this.containerList)
       // console.log(this.editorList[this.itemIndex].setting.children);
-      this.submit()
+      this.submit();
     },
     submit() {
       if (this.submitLater) {
         clearTimeout(this.submitLater);
         this.submitLater = null;
-      };
+      }
       this.submitLater = setTimeout(() => {
         let editorList = this.editorList;
-        // console.log(editorList[this.itemIndex].setting.children)
-        // console.log(this.containerList)
+        console.log('editorList[this.itemIndex].setting.children')
+        console.log(this.containerList)
         editorList[this.itemIndex].setting.children = this.containerList;
         this.CHANGE_EDITOR_LIST(editorList);
         this.$emit("refreshState", "");
@@ -328,17 +463,62 @@ export default {
         this.submitLater = null;
       }, 300);
     },
+    keydown(event, index) {
+      // 上下左右键 移动组件
+      var e = event || window.event || arguments.callee.caller.arguments[0];
+      e.preventDefault();
+      
+      let x = this.containerList[index].setting.x;
+      let y = this.containerList[index].setting.y;
+
+      if (e && e.keyCode == 37) {
+        // 左键 
+        console.log('左键')
+        if(x > 0) {
+          x--;
+        }
+      }
+      if(e && e.keyCode == 38) {
+        // 上键
+        console.log('上键')
+        if(y>0) {
+          y--;
+        }
+      }
+      if(e && e.keyCode == 39) {
+        // 右键
+        console.log('右键')
+        if(x < this.parentWidth) {
+          x++
+        };
+      }
+      if(e && e.keyCode == 40) {
+        // 下键
+        console.log('下键')
+        if(x < this.parentHeight) {
+          y++;
+        };
+      };
+
+      this.containerList[index].setting.x = x;
+      this.containerList[index].setting.y = y;
+      console.log("keydown");
+      this.submit();
+    },
     onActivated(item, index, e) {
       // this.active = true
+      console.log("onActivated");
       this.$emit("dragDisabledHandle", true);
       this.dragDisabled = true;
       this.$emit("freeComponentClick", index);
-
+      window.addEventListener("keydown", () => {this.keydown(event, index)});
     },
     onDeactivated() {
       // this.active = false
+      console.log("onDeactivated");
       this.$emit("dragDisabledHandle", false);
       this.dragDisabled = false;
+      window.removeEventListener('keydown', this.keydown);
     },
     mouseOverHandle() {
       this.$emit("dragDisabledHandle", true);
@@ -348,14 +528,25 @@ export default {
       this.$emit("dragDisabledHandle", false);
       this.dragDisabled = false;
     },
+    componentsClick() {
+      console.log("componentsClick");
+    },
     getRefLineParams(params) {
       const { vLine, hLine } = params;
-      // console.log(params);
+      // console.log('getRefLineParams');
+      // if(vLine[0].display) {
+      //   console.log('vLine');
+      //   console.log(vLine);
+      // }
+      // if(hLine[0].display) {
+      //   console.log('hLine');
+      //   console.log(hLine);
+      // }
       this.vLine = vLine;
       this.hLine = hLine;
     },
-    tellParentRefresh(){
-      this.$emit('refreshState', '')
+    tellParentRefresh() {
+      this.$emit("refreshState", "");
     },
     deepClone(target) {
       // 定义一个变量
@@ -394,15 +585,16 @@ export default {
     if (this.submitLater) {
       clearTimeout(this.submitLater);
       this.submitLater = null;
-    };
-    if(this.windowResizeLater) {
+    }
+    if (this.windowResizeLater) {
       clearTimeout(this.windowResizeLater);
       this.windowResizeLater = null;
-    };
-    if(this.watchSettingLater) {
-      clearTimeout(this.watchSettingLater)
+    }
+    if (this.watchSettingLater) {
+      clearTimeout(this.watchSettingLater);
       this.watchSettingLater = null;
     };
+    window.removeEventListener("keydown", this.keydown);
   }
 };
 </script>

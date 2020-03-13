@@ -33,6 +33,7 @@
   border: 1px solid #fff;
   box-sizing: border-box;
   background: #4af;
+  z-index: 10099;
 }
 
 .free-container .vdr .handle-bm, .free-container .vdr .handle-tm {

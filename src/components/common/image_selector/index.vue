@@ -115,11 +115,11 @@ export default {
       const isLt1M = file.size / 1024 / 1024 < 1;
       if (!isJPG) {
         this.$message.error("上传头像图片只能是 JPG/PNG 格式!");
-        return;
+        return false;
       }
       if (!isLt1M) {
         this.$message.error("上传头像图片大小不能超过 1MB!");
-        return;
+        return false;
       }
       let token = localStorage.getItem("iimgToken");
       this.uploading(file);
@@ -139,8 +139,7 @@ export default {
       localStorage.setItem("imageList", JSON.stringify(imageList));
     },
     uploadError(err, file) {
-      this.loading = false;
-      this.$message.error("上传失败!");
+      this.$message.error("上传失败，换张图片试试!");
     },
     uploading(file) {
       this.loading = true;
@@ -154,10 +153,11 @@ export default {
           if (res.data.code === 1) {
             this.uploadSuccess(res, file);
           } else {
-            this.$message.warning(res.data.msg);
+            this.uploadError(res, file);
           }
         })
         .catch(err => {
+          this.loading = false;
           this.uploadError(err, file);
         });
     },

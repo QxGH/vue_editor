@@ -596,10 +596,14 @@ export default {
         }
       } else if (val.to.dataset.name === "freePreviewDrag") {
         // 自由组件拖动到自由容器
+        let scrollTop = this.$refs["scroll"].scrollPanelElm
+        ? this.$refs["scroll"].scrollPanelElm.scrollTop
+        : 0;
         let offsetX = 0, offsetY = 0;
         offsetX = val.originalEvent.pageX - this.$refs.previewMain.offsetLeft + 1 - this.dragOffsetData.x;
-        offsetY = val.originalEvent.pageY - this.$refs.previewMain.offsetTop + 1 - this.dragOffsetData.y;
+        offsetY = val.originalEvent.pageY - this.$refs.previewMain.offsetTop + 1 - this.dragOffsetData.y + scrollTop;
 
+        // 组件拖入超出区域 显示到区域内
         if (offsetX < 0) {
           offsetX = 0;
         } else if (offsetX > val.to.offsetWidth - 100) {

@@ -21,6 +21,7 @@
 
 .editor .el-main {
   background: #f8f8f8;
+  overflow: hidden;
 }
 
 .editor .el-aside {
