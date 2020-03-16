@@ -30,7 +30,8 @@ console.log(`
 `);
 
 // element
-import { Container, Header, Aside, Main, Footer, Button, Row, Col,Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane, Input, Avatar, Image } from 'element-ui';
+import {
+  Container, Header, Aside, Main, Footer, Button, Row, Col, Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane, Input, Avatar, Image, Radio, RadioGroup, RadioButton } from 'element-ui';
 Vue.use(Container);
 Vue.use(Header);
 Vue.use(Aside);
@@ -59,6 +60,9 @@ Vue.use(TabPane);
 Vue.use(Input);
 Vue.use(Avatar)
 Vue.use(Image)
+Vue.use(Radio);
+Vue.use(RadioGroup);
+Vue.use(RadioButton);
 
 
 // vdr

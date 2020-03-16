@@ -113,6 +113,7 @@ import "v-contextmenu/dist/index.css";
 import FreeFill from "../../../components/editor_preview/free_fill";
 import FreeImage from "../../../components/editor_preview/free_image";
 import FreeText from "../../../components/editor_preview/free_text";
+import FreeBtn from "../../../components/editor_preview/free_btn";
 
 export default {
   name: "freeContainer",
@@ -122,6 +123,7 @@ export default {
     FreeFill,
     FreeImage,
     FreeText,
+    FreeBtn,
     directive,
     Contextmenu,
     ContextmenuItem,
@@ -140,8 +142,8 @@ export default {
       immediate: true,
       deep: true,
       handler(val) {
-        // console.log('watch - setting.children')
-        // console.log(val)
+        console.log('watch - setting.children')
+        console.log(val)
         if (this.watchSettingLater) {
           clearTimeout(this.watchSettingLater);
           this.watchSettingLater = null;

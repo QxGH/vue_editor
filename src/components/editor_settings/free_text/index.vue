@@ -43,9 +43,14 @@ export default {
       type: Object,
       default() {
         return {
-          color: "#333",
+          text: '文本内容',
+          color: '#333333',
           size: '14',
-          text: "文本内容"
+          width: 100,
+          height: 100,
+          x: 0,
+          y: 0,
+          z: 1
         }
       }
     },

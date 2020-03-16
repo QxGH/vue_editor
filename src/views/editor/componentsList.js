@@ -1,6 +1,9 @@
+
+import uuidV4 from "uuid/v4";
+
 const list = [
   {
-    id: '1',
+    id: uuidV4(),
     label: 'carousel',
     name: '走马灯',
     icon: 'icon-carousel',
@@ -18,7 +21,7 @@ const list = [
       ]
     }
   }, {
-    id: '2',
+    id: uuidV4(),
     label: 'divider',
     name: '分割线',
     icon: 'icon-divider',
@@ -31,7 +34,7 @@ const list = [
       size: '1'
     }
   }, {
-    id: '3',
+    id: uuidV4(),
     label: 'freeContainer',
     name: '自由容器',
     type: 'freeContainer',
@@ -44,7 +47,7 @@ const list = [
       children: []
     }
   }, {
-    id: '4',
+    id: uuidV4(),
     label: 'freeImage',
     name: '图片',
     type: 'free',
@@ -62,7 +65,7 @@ const list = [
       z: 1
     }
   }, {
-    id: '5',
+    id: uuidV4(),
     label: 'freeText',
     name: '文本',
     type: 'free',
@@ -81,7 +84,28 @@ const list = [
       z: 1
     }
   }, {
-    id: '6',
+    id: uuidV4(),
+    label: 'freeBtn',
+    name: '按钮',
+    type: 'free',
+    icon: 'icon-button-handle',
+    previewComponent: 'FreeBtn',
+    settingComponent: 'FreeBtnSetting',
+    version: 1,
+    setting: {
+      text: '按钮',
+      color: '#ffffff',
+      bg: '#409eff',
+      size: '14',
+      width: 100,
+      height: 40,
+      style: 'primary',
+      x: 0,
+      y: 0,
+      z: 1
+    }
+  }, {
+    id: uuidV4(),
     label: 'navbar',
     name: '底部导航',
     type: 'navbar',

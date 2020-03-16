@@ -216,6 +216,7 @@ import Divider from "../../components/editor_preview/divider";
 import DividerSetting from "../../components/editor_settings/divider";
 import FreeContainer from "../../components/editor_preview/free_container";
 import FreeTextSetting from "../../components/editor_settings/free_text";
+import FreeBtnSetting from "../../components/editor_settings/free_btn";
 import FreeImageSetting from "../../components/editor_settings/free_image";
 import Navbar from "../../components/editor_preview/navbar";
 import NavbarSetting from "../../components/editor_settings/navbar";
@@ -287,6 +288,7 @@ export default {
     DividerSetting,
     FreeContainer,
     FreeTextSetting,
+    FreeBtnSetting,
     FreeImageSetting,
     Navbar,
     NavbarSetting,
@@ -345,13 +347,13 @@ export default {
       this.previewIndex = this.editorIndex;
       console.log(this.previewList);
     },
-    mouseoverHandle(){
+    mouseoverHandle() {
       this.componentsHandle.show = true;
     },
-    mouseoutHandle(){
+    mouseoutHandle() {
       this.componentsHandle.show = false;
     },
-    mouseoverComponenter (item, index, evt){
+    mouseoverComponenter(item, index, evt) {
       // 鼠标移入组件事件
       // 显示 handle
       let id = `previewListBox-${index}`;
@@ -373,7 +375,7 @@ export default {
         this.componentsHandle.downShow = false;
       }
     },
-    mouseoutComponenter (item, index, evt){
+    mouseoutComponenter(item, index, evt) {
       // 鼠标移出组件事件
       this.componentsHandle.show = false;
     },
@@ -403,8 +405,8 @@ export default {
             console.log("点击的是 自由组件");
             console.log(item);
             if (
+              item.setting.children[this.settingFreeComponentIndex] &&
               item.setting.children[this.settingFreeComponentIndex]
-                && item.setting.children[this.settingFreeComponentIndex]
                 .settingComponent
             ) {
               // 没有 settingComponent 不赋值
@@ -426,7 +428,10 @@ export default {
           //   console.log("当前拖入的是需要包裹自由容器的自由组件");
           //   this.settingComponent = item.setting.children[0].settingComponent;
           // }
-          if(item.setting.children[0] && item.setting.children[0].settingComponent) {
+          if (
+            item.setting.children[0] &&
+            item.setting.children[0].settingComponent
+          ) {
             this.settingComponent = item.setting.children[0].settingComponent;
           } else {
             this.settingComponent = "";
@@ -525,60 +530,19 @@ export default {
               children: []
             }
           };
-          // let componentsList = this.deepClone(componentsListConfig);
-          // for(let item of componentsList) {
-          //   if(item.label == this.previewLogData.element.label) {
-          //     let children = item;
-          //     children.id = uuidV4();
-          //     obj.setting.children = children;
-          //     break;
-          //   }
-          // };
-          if (this.previewLogData.element.label === "freeImage") {
-            obj.setting.children = [
-              {
-                id: uuidV4(),
-                label: "freeImage",
-                name: "图片",
-                type: "free",
-                icon: "icon-image",
-                previewComponent: "FreeImage",
-                settingComponent: "FreeImageSetting",
-                setting: {
-                  imageID: "default",
-                  imageUrl: "https://qxtodo.com/editor/animation_wallpaper.jpg",
-                  width: 100,
-                  height: 100,
-                  x: 0,
-                  y: 0,
-                  z: 1
-                }
-              }
-            ];
-          } else if (this.previewLogData.element.label === "freeText") {
-            obj.setting.children = [
-              {
-                id: uuidV4(),
-                label: "freeText",
-                name: "文本",
-                type: "free",
-                icon: "icon-text",
-                previewComponent: "FreeText",
-                settingComponent: "FreeTextSetting",
-                setting: {
-                  text: "文本内容",
-                  color: "#333333",
-                  size: "14",
-                  width: 100,
-                  height: 100,
-                  x: 0,
-                  y: 0,
-                  z: 1
-                }
-              }
-            ];
-          }
-          // editorList.push(obj);
+
+
+          let componentsList = this.deepClone(componentsListConfig);
+          for(let item of componentsList) {
+            if(item.label == this.previewLogData.element.label) {
+              obj.setting.children = [{
+                ...item,
+                id: uuidV4()
+              }];
+              break;
+            }
+          };
+
           editorList.splice(val.newIndex, 0, obj);
           this.previewList = editorList;
           this.settingFreeComponentIndex = 0; // 默认选中第一个自由组件
@@ -597,11 +561,21 @@ export default {
       } else if (val.to.dataset.name === "freePreviewDrag") {
         // 自由组件拖动到自由容器
         let scrollTop = this.$refs["scroll"].scrollPanelElm
-        ? this.$refs["scroll"].scrollPanelElm.scrollTop
-        : 0;
-        let offsetX = 0, offsetY = 0;
-        offsetX = val.originalEvent.pageX - this.$refs.previewMain.offsetLeft + 1 - this.dragOffsetData.x;
-        offsetY = val.originalEvent.pageY - this.$refs.previewMain.offsetTop + 1 - this.dragOffsetData.y + scrollTop;
+          ? this.$refs["scroll"].scrollPanelElm.scrollTop
+          : 0;
+        let offsetX = 0,
+          offsetY = 0;
+        offsetX =
+          val.originalEvent.pageX -
+          this.$refs.previewMain.offsetLeft +
+          1 -
+          this.dragOffsetData.x;
+        offsetY =
+          val.originalEvent.pageY -
+          this.$refs.previewMain.offsetTop +
+          1 -
+          this.dragOffsetData.y +
+          scrollTop;
 
         // 组件拖入超出区域 显示到区域内
         if (offsetX < 0) {
@@ -613,7 +587,7 @@ export default {
           offsetY = 0;
         } else if (offsetY > val.to.offsetHeight - 100) {
           offsetY = val.to.offsetHeight - 100;
-        };
+        }
 
         let setting = editorList[editorIndex].setting;
         let label = val.item.dataset.label;
