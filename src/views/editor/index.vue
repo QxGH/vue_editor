@@ -217,6 +217,7 @@ import DividerSetting from "../../components/editor_settings/divider";
 import FreeContainer from "../../components/editor_preview/free_container";
 import FreeTextSetting from "../../components/editor_settings/free_text";
 import FreeBtnSetting from "../../components/editor_settings/free_btn";
+import FreeOmnipotentSetting from "../../components/editor_settings/free_omnipotent";
 import FreeImageSetting from "../../components/editor_settings/free_image";
 import Navbar from "../../components/editor_preview/navbar";
 import NavbarSetting from "../../components/editor_settings/navbar";
@@ -289,6 +290,7 @@ export default {
     FreeContainer,
     FreeTextSetting,
     FreeBtnSetting,
+    FreeOmnipotentSetting,
     FreeImageSetting,
     Navbar,
     NavbarSetting,

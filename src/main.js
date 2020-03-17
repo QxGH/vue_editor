@@ -8,7 +8,7 @@ import './assets/iconfont/font.css'
 import api from './api' // 导入api接口
 Vue.prototype.$api = api; // 将api挂载到vue的原型上复制代码
 
-console.log('%c Versions 20200313 ', "font-size: 42px; color: #FFFFFF;background-image: linear-gradient(to right, #12c2e9, #c471ed, #f7797d);");
+console.log('%c Versions 20200317 ', "font-size: 42px; color: #FFFFFF;background-image: linear-gradient(to right, #12c2e9, #c471ed, #f7797d);");
 console.log(`
   く__,.ヘヽ.        /  ,ー､ 〉
            ＼ ', !-─‐-i  /  /´

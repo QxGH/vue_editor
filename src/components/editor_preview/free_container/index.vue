@@ -41,8 +41,8 @@
             :data-x="item.setting.x"
             :data-y="item.setting.y"
             :data-index="index"
-            :min-height="50"
-            :min-width="50"
+            :min-height="40"
+            :min-width="40"
             @dragging="onDrag(index, arguments)"
             @resizing="onResize(index, arguments)"
             @activated="onActivated(item, index)"
@@ -114,6 +114,7 @@ import FreeFill from "../../../components/editor_preview/free_fill";
 import FreeImage from "../../../components/editor_preview/free_image";
 import FreeText from "../../../components/editor_preview/free_text";
 import FreeBtn from "../../../components/editor_preview/free_btn";
+import FreeOmnipotent from "../../../components/editor_preview/free_omnipotent";
 
 export default {
   name: "freeContainer",
@@ -124,6 +125,7 @@ export default {
     FreeImage,
     FreeText,
     FreeBtn,
+    FreeOmnipotent,
     directive,
     Contextmenu,
     ContextmenuItem,

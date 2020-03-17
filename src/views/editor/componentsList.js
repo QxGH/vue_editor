@@ -106,6 +106,22 @@ const list = [
     }
   }, {
     id: uuidV4(),
+    label: 'freeOmnipotent',
+    name: '万能热区',
+    type: 'free',
+    icon: 'icon-omnipotent',
+    previewComponent: 'FreeOmnipotent',
+    settingComponent: 'FreeOmnipotentSetting',
+    version: 1,
+    setting: {
+      width: 100,
+      height: 40,
+      x: 0,
+      y: 0,
+      z: 1
+    }
+  }, {
+    id: uuidV4(),
     label: 'navbar',
     name: '底部导航',
     type: 'navbar',
