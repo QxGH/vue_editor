@@ -35,6 +35,31 @@ const list = [
     }
   }, {
     id: uuidV4(),
+    label: 'graphicNav',
+    name: '图文导航',
+    icon: 'icon-graphicNav',
+    type: 'normal',
+    previewComponent: 'GraphicNav',
+    settingComponent: 'GraphicNavSetting',
+    version: 1,
+    setting: {
+      list: [
+        {
+          id: uuidV4(),
+          imageID: "default",
+          imageUrl: 'https://cdn.qinxus.com/animation_gril_banner_2.jpg',
+          title: '标题',
+          link: {
+            id: uuidV4(),
+            type: '',
+            label: '',
+            url: ''
+          }
+        }
+      ]
+    }
+  }, {
+    id: uuidV4(),
     label: 'freeContainer',
     name: '自由容器',
     type: 'freeContainer',
@@ -97,9 +122,15 @@ const list = [
       color: '#ffffff',
       bg: '#409eff',
       size: '14',
+      style: 'primary',
+      link: {
+        id: uuidV4(),
+        type: '',
+        label: '',
+        url: ''
+      },
       width: 100,
       height: 40,
-      style: 'primary',
       x: 0,
       y: 0,
       z: 1
@@ -114,6 +145,12 @@ const list = [
     settingComponent: 'FreeOmnipotentSetting',
     version: 1,
     setting: {
+      link: {
+        id: uuidV4(),
+        type: '',
+        label: '',
+        url: ''
+      },
       width: 100,
       height: 40,
       x: 0,

@@ -42,16 +42,31 @@
       :autosize="{minRows: 5, maxRows: 8}"
       @input="textChange"
     ></el-input>
+    <el-divider>点击事件</el-divider>
+    <el-button type="primary" plain @click="selectorLinkHandle">选择链接</el-button>
+    <span class="link-tips" v-if="currentLinkObj.label">已设置：{{currentLinkObj.label}}</span>
+
+    <LinkSelector
+      v-if="showLinkSelector"
+      :linkID="currentLinkID"
+      @submitLink="submitLinkHandle"
+    ></LinkSelector>
   </div>
 </template>
 
 <script>
 import { mapState, mapMutations } from "vuex";
+import LinkSelector from "../../common/link_selector"
+
 
 export default {
   name: "freeBtnSetting",
   data() {
-    return {};
+    return {
+      showLinkSelector: false,  // 是否显示链接选择器
+      currentLinkObj: {},
+      currentLinkID: "", // 当前选中链接id
+    };
   },
   computed: {
     ...mapState(["editorList", "editorIndex"])
@@ -65,9 +80,15 @@ export default {
           color: '#ffffff',
           bg: '#409eff',
           size: '14',
+          style: 'primary',
+          link: {
+            id: uuidV4(),
+            type: '',
+            label: '',
+            url: ''
+          },
           width: 100,
           height: 40,
-          style: 'primary',
           x: 0,
           y: 0,
           z: 1
@@ -80,6 +101,13 @@ export default {
         return 0;
       }
     }
+  },
+  components: {
+    LinkSelector
+  },
+  created(){
+    this.currentLinkObj = this.setting.link;
+    this.currentLinkID = this.setting.link.id;
   },
   methods: {
     ...mapMutations(["CHANGE_EDITOR_LIST"]),
@@ -138,6 +166,22 @@ export default {
       this.CHANGE_EDITOR_LIST(editorList);
       this.tellParent();
     },
+    selectorLinkHandle() {
+      this.showLinkSelector = true;
+    },
+    submitLinkHandle(val) {
+      if (val.id && val.type && val.label && val.url) {
+        let editorList = this.editorList;
+        let editorIndex = this.editorIndex;
+        editorList[editorIndex].setting.children[
+          this.settingFreeComponentIndex
+        ].setting.link = val;
+        this.currentLinkObj = val;
+        this.CHANGE_EDITOR_LIST(editorList);
+        this.tellParent();
+      }
+      this.showLinkSelector = false; // 显示图片选择器
+    },
     tellParent() {
       this.$emit("refreshState", "");
     }
@@ -146,4 +190,5 @@ export default {
 </script>
 
 <style>
+@import url('./style/index.min.css');
 </style>

@@ -1,14 +1,16 @@
 import Vue from 'vue'
+import ElementUI from 'element-ui';
 import App from './App.vue'
 import router from './router'
 import store from './store'
+import 'element-ui/lib/theme-chalk/index.css';
 import './assets/style/app.min.css'
 import './assets/iconfont/font.css'
 
 import api from './api' // 导入api接口
 Vue.prototype.$api = api; // 将api挂载到vue的原型上复制代码
 
-console.log('%c Versions 20200317 ', "font-size: 42px; color: #FFFFFF;background-image: linear-gradient(to right, #12c2e9, #c471ed, #f7797d);");
+console.log('%c Versions 20200318 ', "font-size: 42px; color: #FFFFFF;background-image: linear-gradient(to right, #12c2e9, #c471ed, #f7797d);");
 console.log(`
   く__,.ヘヽ.        /  ,ー､ 〉
            ＼ ', !-─‐-i  /  /´
@@ -30,39 +32,41 @@ console.log(`
 `);
 
 // element
-import {
-  Container, Header, Aside, Main, Footer, Button, Row, Col, Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane, Input, Avatar, Image, Radio, RadioGroup, RadioButton } from 'element-ui';
-Vue.use(Container);
-Vue.use(Header);
-Vue.use(Aside);
-Vue.use(Main);
-Vue.use(Footer);
-Vue.use(Button);
-Vue.use(Row);
-Vue.use(Col);
-Vue.use(Carousel);
-Vue.use(CarouselItem);
-Vue.use(Collapse);
-Vue.use(CollapseItem);
-Vue.use(Upload);
-Vue.use(Icon);
-Vue.prototype.$message = Message;
-Vue.use(Loading.directive);
-Vue.prototype.$loading = Loading.service;
-Vue.use(ColorPicker);
-Vue.use(Select);
-Vue.use(Option);
-Vue.use(OptionGroup);
-Vue.use(Divider);
-Vue.use(Dialog);
-Vue.use(Tabs);
-Vue.use(TabPane);
-Vue.use(Input);
-Vue.use(Avatar)
-Vue.use(Image)
-Vue.use(Radio);
-Vue.use(RadioGroup);
-Vue.use(RadioButton);
+Vue.use(ElementUI);
+// import {
+//   Container, Header, Aside, Main, Footer, Button, Row, Col, Carousel, CarouselItem, Collapse, CollapseItem, Upload, Icon, Message, Loading, ColorPicker, Select, Option, OptionGroup, Divider, Dialog, Tabs, TabPane, Input, Avatar, Image, Radio, RadioGroup, RadioButton, Pagination } from 'element-ui';
+// Vue.use(Container);
+// Vue.use(Header);
+// Vue.use(Aside);
+// Vue.use(Main);
+// Vue.use(Footer);
+// Vue.use(Button);
+// Vue.use(Row);
+// Vue.use(Col);
+// Vue.use(Carousel);
+// Vue.use(CarouselItem);
+// Vue.use(Collapse);
+// Vue.use(CollapseItem);
+// Vue.use(Upload);
+// Vue.use(Icon);
+// Vue.prototype.$message = Message;
+// Vue.use(Loading.directive);
+// Vue.prototype.$loading = Loading.service;
+// Vue.use(ColorPicker);
+// Vue.use(Select);
+// Vue.use(Option);
+// Vue.use(OptionGroup);
+// Vue.use(Divider);
+// Vue.use(Dialog);
+// Vue.use(Tabs);
+// Vue.use(TabPane);
+// Vue.use(Input);
+// Vue.use(Avatar)
+// Vue.use(Image)
+// Vue.use(Radio);
+// Vue.use(RadioGroup);
+// Vue.use(RadioButton);
+// Vue.use(Pagination);
 
 
 // vdr

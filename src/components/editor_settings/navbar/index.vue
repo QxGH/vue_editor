@@ -31,7 +31,7 @@
 import uuidV4 from "uuid/v4";
 import { mapState, mapMutations } from "vuex";
 
-import IconSelector from '../../../components/common/icon_selector/'
+import IconSelector from '../../common/icon_selector'
 
 export default {
   name: "navbarSetting",

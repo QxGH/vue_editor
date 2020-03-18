@@ -48,3 +48,22 @@ body {
   margin: 0 auto 10px;
   cursor: pointer;
 }
+
+
+.icon-selector {
+  margin: 5px auto;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 4px;
+  text-align: center;
+  cursor: pointer;
+  &:hover {
+    background: #f1f1f1;
+  }
+  .iconfont {
+    font-size: 30px;
+    line-height: 32px;
+  }
+}

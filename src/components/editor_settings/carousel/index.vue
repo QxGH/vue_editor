@@ -60,6 +60,7 @@ export default {
         return;
       }
       let newObj = {
+        imageID: "default",
         imageUrl: "https://qxtodo.com/editor/animation_wallpaper.jpg"
       };
       list.push(newObj);
@@ -99,12 +100,12 @@ export default {
       let editorList = this.editorList;
       let editorIndex = this.editorIndex;
       if (val.imageID && val.imageUrl) {
-          let list = editorList[editorIndex].setting.list;
-          list[this.activeName-1].imageID = val.imageID;
-          list[this.activeName-1].imageUrl = val.imageUrl;
-          editorList[editorIndex].setting.list = list;
-          this.CHANGE_EDITOR_LIST(editorList)
-          this.tellParent()
+        let list = editorList[editorIndex].setting.list;
+        list[this.activeName-1].imageID = val.imageID;
+        list[this.activeName-1].imageUrl = val.imageUrl;
+        editorList[editorIndex].setting.list = list;
+        this.CHANGE_EDITOR_LIST(editorList)
+        this.tellParent()
       }
       this.showImageSelector = false; // 显示图片选择器
 

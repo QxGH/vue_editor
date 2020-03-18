@@ -83,17 +83,17 @@ export default {
       localStorage.setItem("imageList", JSON.stringify([]));
     }
     console.log(this.imageID);
-    if (this.imageID != "default") {
-      for (let item of imageList) {
-        if (this.imageID == item.id) {
-          item.isSelect = true;
-          this.currentSelectID = item.id;
-          this.currentSelectImage = item.imageUrl;
-        } else {
-          item.isSelect = false;
-        }
+    // if (this.imageID != "default") {
+    for (let item of imageList) {
+      if (this.imageID == item.id) {
+        item.isSelect = true;
+        this.currentSelectID = item.id;
+        this.currentSelectImage = item.imageUrl;
+      } else {
+        item.isSelect = false;
       }
     }
+    // }
     this.imageList = imageList;
   },
   methods: {

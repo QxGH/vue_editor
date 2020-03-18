@@ -1,0 +1,16 @@
+.link-selector .el-dialog__body {
+  padding: 0 20px;
+}
+
+.link-selector .list-items {
+  margin-bottom: 20px;
+}
+
+.link-selector .link-item {
+  padding: 15px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.link-selector .link-item:first-child {
+  padding-top: 5px;
+}
