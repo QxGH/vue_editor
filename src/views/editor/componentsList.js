@@ -60,6 +60,41 @@ const list = [
     }
   }, {
     id: uuidV4(),
+    label: 'goodsList',
+    name: '商品列表',
+    icon: 'icon-goods',
+    type: 'normal',
+    previewComponent: 'GoodsList',
+    settingComponent: 'GoodsListSetting',
+    version: 1,
+    setting: {
+      style: 'default', // 样式
+      chooseMode: 'auto', // 选择方式 hand / auto
+      group: [],  // 分组
+      sort: 'createTime', // 排序 createTime - 按上架时间排序；  priceDescending - 按价格降序； priceAscending - 按价格升序
+      numberType: 'all',  // 数量类型 all- 全部； custom - 自定义
+      number: 1,
+      autoList: [
+        {
+          id: 'default-'+uuidV4(),
+          picture: 'https://qxtodo.com/editor/animation_wallpaper.jpg',
+          name: '商品名称',
+          price: 8.88,
+          type: '商品类型'
+        }
+      ],
+      handList: [
+        {
+          id: 'default-'+uuidV4(),
+          picture: 'https://qxtodo.com/editor/animation_wallpaper.jpg',
+          name: '商品名称',
+          price: 8.88,
+          type: '商品类型'
+        }
+      ]
+    }
+  }, {
+    id: uuidV4(),
     label: 'freeContainer',
     name: '自由容器',
     type: 'freeContainer',

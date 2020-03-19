@@ -216,6 +216,8 @@ import Divider from "../../components/editor_preview/divider";
 import DividerSetting from "../../components/editor_settings/divider";
 import GraphicNav from "../../components/editor_preview/graphic_nav";
 import GraphicNavSetting from "../../components/editor_settings/graphic_nav";
+import GoodsList from "../../components/editor_preview/goods_list";
+import GoodsListSetting from "../../components/editor_settings/goods_list";
 import FreeContainer from "../../components/editor_preview/free_container";
 import FreeTextSetting from "../../components/editor_settings/free_text";
 import FreeBtnSetting from "../../components/editor_settings/free_btn";
@@ -291,6 +293,8 @@ export default {
     DividerSetting,
     GraphicNav,
     GraphicNavSetting,
+    GoodsList,
+    GoodsListSetting,
     FreeContainer,
     FreeTextSetting,
     FreeBtnSetting,

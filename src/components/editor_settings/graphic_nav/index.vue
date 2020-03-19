@@ -1,8 +1,8 @@
 <template>
-  <div class="navbar-setting">
+  <div class="graphic-nav-setting">
     <el-collapse v-model="activeName" accordion>
       <template v-for="(item, index) in setting.list">
-        <el-collapse-item :title="'navbar-'+(index+1)" :name="index+1" :key="item.id">
+        <el-collapse-item :title="'graphic-nav-'+(index+1)" :name="index+1" :key="item.id">
           <el-divider>icon</el-divider>
             <div class="image-selector" @click="selectorImageHandle(item.imageID)">
               <el-image style="width: 100px; height: 100px" :src="item.imageUrl" fit="contain"></el-image>
@@ -48,7 +48,7 @@ import LinkSelector from "../../common/link_selector"
 
 
 export default {
-  name: "navbarSetting",
+  name: "graphicNavSetting",
   data(){
     return {
       activeName: 1,
