@@ -55,7 +55,12 @@ export default {
           this.$refs.goodsTable.clearSelection();
         } else {
           rows.forEach(row => {
-            this.$refs.goodsTable.toggleRowSelection(row);
+            this.$refs.goodsTable.toggleRowSelection(
+              this.goodsList.find(item => {
+                return row.id == item.id; // 注意这里寻找的字段要唯一，示例仅参考
+              }),
+              true
+            );
           });
         }
       } else {
