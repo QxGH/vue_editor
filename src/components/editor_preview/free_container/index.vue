@@ -27,6 +27,7 @@
         element="div"
         @change="log"
         :disabled="dragDisabled"
+        :id="'freePreviewnew_'+new Date().getTime()"
       >
         <template v-for="(item, index) in containerList">
           <vdr
@@ -149,7 +150,8 @@ export default {
         if (this.watchSettingLater) {
           clearTimeout(this.watchSettingLater);
           this.watchSettingLater = null;
-        }
+        };
+        // this.$nextTick(() => {})
         this.watchSettingLater = setTimeout(() => {
           this.containerList = this.deepClone(val);
           clearTimeout(this.watchSettingLater);

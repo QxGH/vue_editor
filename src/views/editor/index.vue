@@ -310,9 +310,6 @@ export default {
       "CHANGE_EDITOR_INDEX",
       "CHANGE_NAVBAR_LIST"
     ]),
-    // changeEditorList(val){
-    //   this.CHANGE_EDITOR_LIST(val)
-    // },
     componentsDel() {
       // 组件删除
       let editorList = this.deepClone(this.editorList);
@@ -508,6 +505,7 @@ export default {
       let editorIndex = Number(val.to.dataset.index);
       console.log("endHandle");
       console.log(val);
+
       // console.log(this.editorList)
       // console.log(this.previewLogData)
       // console.log(this.previewList)
@@ -575,17 +573,25 @@ export default {
           : 0;
         let offsetX = 0,
           offsetY = 0;
+
         offsetX =
           val.originalEvent.pageX -
           this.$refs.previewMain.offsetLeft +
           1 -
           this.dragOffsetData.x;
-        offsetY =
-          val.originalEvent.pageY -
-          this.$refs.previewMain.offsetTop +
-          1 -
-          this.dragOffsetData.y +
-          scrollTop;
+
+        let dropBox = document.getElementById(val.to.id);
+        let dropBoxTop = dropBox.getBoundingClientRect().top;
+
+        offsetY = val.originalEvent.y - dropBoxTop + scrollTop - this.dragOffsetData.y + 1;
+
+        // offsetY = val.originalEvent.pageY -
+        //   previewListBoxoffsetTop +
+        //   1 -
+        //   this.dragOffsetData.y +
+        //   scrollTop;
+
+
 
         // 组件拖入超出区域 显示到区域内
         if (offsetX < 0) {
@@ -610,6 +616,7 @@ export default {
             obj.setting.x = offsetX;
             obj.setting.y = offsetY;
             console.log(val);
+            console.log('offsetX, offsetY');
             console.log(offsetX);
             console.log(offsetY);
             obj.setting.z = setting.children.length + 1;
@@ -677,6 +684,7 @@ export default {
     },
     fillContainer() {
       // 优化自由组件放置
+      console.log('fillContainer')
       let freeFill = {
         id: uuidV4(),
         label: "freeFill",
@@ -694,6 +702,7 @@ export default {
         }
       };
       let editorList = this.deepClone(this.editorList);
+      console.log(editorList)
       if (editorList.length > 0) {
         editorList.map((item, index) => {
           if (item.type == "freeContainer") {
