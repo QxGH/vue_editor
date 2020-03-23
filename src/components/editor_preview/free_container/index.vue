@@ -50,7 +50,7 @@
             @deactivated="onDeactivated"
             :parent="true"
             :snap="true"
-            :snapTolerance="5"
+            :snapTolerance="3"
             @refLineParams="getRefLineParams"
             :isConflictCheck="false"
             v-contextmenu:contextmenu
@@ -323,6 +323,7 @@ export default {
       }, 300);
     },
     onResize(index, [x, y, width, height]) {
+      // 拖动大小的方法
       console.log("onResize");
       this.containerList[index].setting.x = x;
       this.containerList[index].setting.y = y;
@@ -335,10 +336,8 @@ export default {
       // 拖动大小时添加辅助线
       this.vLine = [];
       this.hLine = [];
-      // let refLine = {
-      //   vLine: [],  // 竖线
-      //   hLine: []   // 横线
-      // };
+     
+      // 当前拖动元素的参数
       let vLine = [], // 竖线
         hLine = []; // 横线
       let left = x,
@@ -348,7 +347,9 @@ export default {
         middle = y + height / 2,
         bottom = y + height;
       console.log("onResizeSnap");
+
       for (let [itemIndex, item] of this.containerList.entries()) {
+        // 非当前拖动元素的参数
         let setting = item.setting;
         let x_ = setting.x,
           y_ = setting.y,
@@ -364,49 +365,48 @@ export default {
 
           // vLine
           let vLineLength = y < y_ ? y_ - y + height : y - y_ + height;
-          if (left >= left_-1 && left <= left_+1) {
+          if ((left >= left_-3 && left <= left_+3) || (right >= left_-3 && right <= left_+3)) {
             // 吸附
             // left = left_
             // this.containerList[index].setting.x = left_;
             // this.containerList[index].id = uuidV4();
 
             let posTop = y < y_ ? y : y_;
-            let posLeft = x < x_ ? x : x_;
+            let posLeft = left_;
             vLine.push({
               display: true, // 是否显示
               position: `${posLeft}px`, // hLine-top  vLine-left
               origin: `${posTop}px`, // hLine-left vLine-top
               lineLength: `${vLineLength}px` // width \ height
             });
-          } else {
-            // this.containerList[index].setting.x = x;
-            // this.containerList[index].id = uuidV4();
-          }
+          };
+
           if (center >= center_-1 && center <= center_+1) {
             let posTop = y < y_ ? y : y_;
-            let posLeft = x + width / 2;
+            let posLeft = center_;
             vLine.push({
               display: true, // 是否显示
               position: `${posLeft}px`, // hLine-top  vLine-left
               origin: `${posTop}px`, // hLine-left vLine-top
               lineLength: `${vLineLength}px` // width \ height
             });
-          }
-          if (right >= right_-1 && right <= right_+1) {
+          };
+
+          if ((right >= right_-3 && right <= right_+3) || (left >= right_-3 && left <= right_+3)) {
             let posTop = y < y_ ? y : y_;
-            let posLeft = x < x_ ? x + width : x_ + width;
+            let posLeft = right_;
             vLine.push({
               display: true, // 是否显示
               position: `${posLeft}px`, // hLine-top  vLine-left
               origin: `${posTop}px`, // hLine-left vLine-top
               lineLength: `${vLineLength}px` // width \ height
             });
-          }
+          };
 
           // hLine
           let hLineLength = x < x_ ? x_ - x + width : x - x_ + width;
-          if (top >= top_-1 && top <= top_+1) {
-            let posTop = y < y_ ? y : y_;
+          if ((top >= top_-3 && top <= top_+3) || (bottom >= top_-3 && bottom <= top_+3)) {
+            let posTop = top_;
             let posLeft = x < x_ ? x : x_;
             hLine.push({
               display: true, // 是否显示
@@ -414,9 +414,9 @@ export default {
               origin: `${posLeft}px`, // hLine-left vLine-top
               lineLength: `${hLineLength}px` // width \ height
             });
-          }
+          };
           if (middle >= middle_-1 && middle <= middle_+1) {
-            let posTop = y < y_ ? y + height / 2 : y_ + height / 2;
+            let posTop = middle_;
             let posLeft = x < x_ ? x : x_;
             hLine.push({
               display: true, // 是否显示
@@ -424,9 +424,9 @@ export default {
               origin: `${posLeft}px`, // hLine-left vLine-top
               lineLength: `${hLineLength}px` // width \ height
             });
-          }
-          if (bottom >= bottom_-1 && bottom <= bottom_+1) {
-            let posTop = y < y_ ? y + height : y_ + height;
+          };
+          if ((bottom >= bottom_-3 && bottom <= bottom_+3) || (top >= bottom_-3 && top <= bottom_+3)) {
+            let posTop = bottom_;
             let posLeft = x < x_ ? x : x_;
             hLine.push({
               display: true, // 是否显示
@@ -434,7 +434,7 @@ export default {
               origin: `${posLeft}px`, // hLine-left vLine-top
               lineLength: `${hLineLength}px` // width \ height
             });
-          }
+          };
         }
       }
       this.vLine = vLine;
@@ -453,20 +453,20 @@ export default {
       this.submit();
     },
     submit() {
-      if (this.submitLater) {
-        clearTimeout(this.submitLater);
-        this.submitLater = null;
-      }
-      this.submitLater = setTimeout(() => {
+      // if (this.submitLater) {
+      //   clearTimeout(this.submitLater);
+      //   this.submitLater = null;
+      // }
+      // this.submitLater = setTimeout(() => {
         let editorList = this.editorList;
         console.log('editorList[this.itemIndex].setting.children')
         console.log(this.containerList)
         editorList[this.itemIndex].setting.children = this.containerList;
         this.CHANGE_EDITOR_LIST(editorList);
         this.$emit("refreshState", "");
-        clearTimeout(this.submitLater);
-        this.submitLater = null;
-      }, 300);
+      //   clearTimeout(this.submitLater);
+      //   this.submitLater = null;
+      // }, 300);
     },
     keydown(event) {
       console.log('keydown')

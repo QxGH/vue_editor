@@ -9,37 +9,44 @@
       <el-container>
         <!-- 左侧 list start -->
         <el-aside width="350px" class="left-aside">
-          <draggable
-            element="div"
-            class="component-list clearfix"
-            :list="componentsList"
-            :group="listGroupOption"
-            :clone="cloneHandle"
-            :sort="false"
-            @start="startHandle"
-            @end="endHandle"
-            :move="moveHandle"
-            :disabled="dragDisabled"
-          >
-            <template v-for="item in componentsList">
-              <div
-                class="component-list-box"
-                :key="item.id"
-                :data-type="item.type"
-                :data-label="item.label"
+          <el-tabs v-model="asideTabsActive" type="card" stretch>
+            <el-tab-pane label="页面管理" name="page">
+              <PageManage @refreshState="refreshVuexState"></PageManage>
+            </el-tab-pane>
+            <el-tab-pane label="装修组件" name="components">
+              <draggable
+                element="div"
+                class="component-list clearfix"
+                :list="componentsList"
+                :group="listGroupOption"
+                :clone="cloneHandle"
+                :sort="false"
+                @start="startHandle"
+                @end="endHandle"
+                :move="moveHandle"
+                :disabled="dragDisabled"
               >
-                <div class="component-item">
-                  <div class="icon-box">
-                    <i class="iconfont" :class="item.icon"></i>
+                <template v-for="item in componentsList">
+                  <div
+                    class="component-list-box"
+                    :key="item.id"
+                    :data-type="item.type"
+                    :data-label="item.label"
+                  >
+                    <div class="component-item">
+                      <div class="icon-box">
+                        <i class="iconfont" :class="item.icon"></i>
+                      </div>
+                      <div class="component-name">{{item.name}}</div>
+                    </div>
+                    <div class="drop-tips">
+                      <span class="tips-text">将组件放置到此处</span>
+                    </div>
                   </div>
-                  <div class="component-name">{{item.name}}</div>
-                </div>
-                <div class="drop-tips">
-                  <span class="tips-text">将组件放置到此处</span>
-                </div>
-              </div>
-            </template>
-          </draggable>
+                </template>
+              </draggable>
+            </el-tab-pane>
+          </el-tabs>
         </el-aside>
         <!-- 左侧 list end -->
         <!-- 中间 preview start -->
@@ -210,6 +217,8 @@ import draggable from "vuedraggable";
 import uuidV4 from "uuid/v4";
 import vuescroll from "vuescroll";
 
+import PageManage from "./components/page_manage";
+
 import Carousel from "../../components/editor_preview/carousel";
 import CarouselSetting from "../../components/editor_settings/carousel";
 import Divider from "../../components/editor_preview/divider";
@@ -232,6 +241,7 @@ export default {
   name: "editor",
   data() {
     return {
+      asideTabsActive: "page", // 侧栏 tabs
       componentsList: [],
       previewWrapList: [],
       previewList: [],
@@ -287,6 +297,7 @@ export default {
   },
   components: {
     draggable,
+    PageManage,
     Carousel,
     CarouselSetting,
     Divider,
@@ -353,6 +364,7 @@ export default {
       this.previewList = this.editorList;
       this.previewIndex = this.editorIndex;
       console.log(this.previewList);
+      this.$forceUpdate()
     },
     mouseoverHandle() {
       this.componentsHandle.show = true;
@@ -472,7 +484,7 @@ export default {
       });
     },
     previewLog(evt) {
-      this.previewLogData = evt.added;
+      // this.previewLogData = evt.added;
       this.CHANGE_EDITOR_LIST(this.previewList);
     },
     navbarLog(evt) {
@@ -507,7 +519,6 @@ export default {
       console.log(val);
 
       // console.log(this.editorList)
-      // console.log(this.previewLogData)
       // console.log(this.previewList)
 
       // 清除填充组件
@@ -521,7 +532,7 @@ export default {
       // 放置容器
       if (val.to.dataset.name === "previewList") {
         // 组件拖动到普通容器
-        if (this.previewLogData.element.type === "free") {
+        if (val.item.dataset.type === "free") {
           // 自由组件拖动到普通容器
           // newIndex
           editorList.splice(val.newIndex, 1);
@@ -539,17 +550,18 @@ export default {
             }
           };
 
-
           let componentsList = this.deepClone(componentsListConfig);
-          for(let item of componentsList) {
-            if(item.label == this.previewLogData.element.label) {
-              obj.setting.children = [{
-                ...item,
-                id: uuidV4()
-              }];
+          for (let item of componentsList) {
+            if (item.label == val.item.dataset.label) {
+              obj.setting.children = [
+                {
+                  ...item,
+                  id: uuidV4()
+                }
+              ];
               break;
             }
-          };
+          }
 
           editorList.splice(val.newIndex, 0, obj);
           this.previewList = editorList;
@@ -583,15 +595,18 @@ export default {
         let dropBox = document.getElementById(val.to.id);
         let dropBoxTop = dropBox.getBoundingClientRect().top;
 
-        offsetY = val.originalEvent.y - dropBoxTop + scrollTop - this.dragOffsetData.y + 1;
+        offsetY =
+          val.originalEvent.y -
+          dropBoxTop +
+          scrollTop -
+          this.dragOffsetData.y +
+          1;
 
         // offsetY = val.originalEvent.pageY -
         //   previewListBoxoffsetTop +
         //   1 -
         //   this.dragOffsetData.y +
         //   scrollTop;
-
-
 
         // 组件拖入超出区域 显示到区域内
         if (offsetX < 0) {
@@ -616,7 +631,7 @@ export default {
             obj.setting.x = offsetX;
             obj.setting.y = offsetY;
             console.log(val);
-            console.log('offsetX, offsetY');
+            console.log("offsetX, offsetY");
             console.log(offsetX);
             console.log(offsetY);
             obj.setting.z = setting.children.length + 1;
@@ -684,7 +699,7 @@ export default {
     },
     fillContainer() {
       // 优化自由组件放置
-      console.log('fillContainer')
+      console.log("fillContainer");
       let freeFill = {
         id: uuidV4(),
         label: "freeFill",
@@ -702,7 +717,7 @@ export default {
         }
       };
       let editorList = this.deepClone(this.editorList);
-      console.log(editorList)
+      console.log(editorList);
       if (editorList.length > 0) {
         editorList.map((item, index) => {
           if (item.type == "freeContainer") {

@@ -1,0 +1,36 @@
+.page-manage {
+  .handle-box {
+    border: 1px solid #dcdfe6;
+    line-height: 32px;
+    padding: 0 10px;
+  }
+  .group-children {
+    padding-left: 20px;
+    .handle-box {
+      cursor: pointer;
+    }
+  }
+  .handle-name,
+  .handle-icon,
+  .handle-opt {
+    display: inline-block;
+  }
+  .handle-icon {
+    .icon {
+      font-size: 20px;
+      cursor: pointer;
+    }
+  }
+  .handle-opt {
+    float: right;
+    .icon {
+      margin: 0 5px;
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 32px;
+    }
+  }
+  ul, li {
+    list-style: none;
+  }
+}
