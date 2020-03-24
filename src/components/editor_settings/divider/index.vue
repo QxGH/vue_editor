@@ -51,7 +51,9 @@ export default {
       let editorList = this.editorList;
       let editorIndex = this.editorIndex;
       // let setting = editorList[editorIndex].setting;
-      // setting.size = val;
+      // this.setting.size = val;
+      console.log('this.setting')
+      console.log(this.setting)
       editorList[editorIndex].setting.size = val;
       this.CHANGE_EDITOR_LIST(editorList)
       this.tellParent()

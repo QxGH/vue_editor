@@ -2,8 +2,10 @@
   <div class="editor">
     <el-container>
       <el-header class="clearfix">
-        <div class="json-btn-box">
-          <el-button type="primary" @click="JsonDialog = true">JSON数据</el-button>
+        <div class="header-btn-box">
+          <el-button type="primary" @click="fillData">填充数据</el-button>
+          <el-button type="primary" @click="JsonDialog = true">页面数据</el-button>
+          <el-button type="primary" @click="save">保存页面</el-button>
         </div>
       </el-header>
       <el-container>
@@ -11,7 +13,7 @@
         <el-aside width="350px" class="left-aside">
           <el-tabs v-model="asideTabsActive" type="card" stretch>
             <el-tab-pane label="页面管理" name="page">
-              <PageManage @refreshState="refreshVuexState"></PageManage>
+              <PageManage @refreshState="refreshVuexState" @changePage="changePage"></PageManage>
             </el-tab-pane>
             <el-tab-pane label="装修组件" name="components">
               <draggable
@@ -64,6 +66,9 @@
                 class="preview"
                 :style="{height: showNavbarDragBox || navbarList.length>0 ? '667px' : '617px'}"
               >
+                <div class="preview-header" @click="clickPreviewHader" :style="{background: editorCurrentPage.setting.headerBg}">
+                  {{editorCurrentPage.setting.name}}
+                </div>
                 <div class="preview-main" ref="previewMain">
                   <transition name="el-fade-in">
                     <div
@@ -173,7 +178,8 @@
         <!-- 中间 preview end -->
         <!-- 右侧 setting start -->
         <el-aside width="350px" class="right-aside">
-          <template v-if="settingComponent && previewIndex !== ''">
+          <!-- 组件设置 -->
+          <template v-if="settingComponent && previewIndex !== '' && !showPageSetting">
             <component
               :is="settingComponent"
               @refreshState="refreshVuexState"
@@ -181,11 +187,20 @@
               :settingFreeComponentIndex="settingFreeComponentIndex"
             ></component>
           </template>
-          <template v-if="settingComponent && selectNavbar">
+          <!-- 底部导航组件 设置 -->
+          <template v-if="settingComponent && selectNavbar && !showPageSetting">
             <component
               :is="settingComponent"
               @refreshState="refreshVuexState"
               :setting="navbarList[0].setting"
+            ></component>
+          </template>
+          <!-- 头部 页面设置 -->
+          <template v-if="settingComponent && showPageSetting">
+            <component
+              :is="settingComponent"
+              @refreshState="refreshVuexState"
+              :setting="editorCurrentPage.setting"
             ></component>
           </template>
         </el-aside>
@@ -234,9 +249,10 @@ import FreeOmnipotentSetting from "../../components/editor_settings/free_omnipot
 import FreeImageSetting from "../../components/editor_settings/free_image";
 import Navbar from "../../components/editor_preview/navbar";
 import NavbarSetting from "../../components/editor_settings/navbar";
+import PageSetting from "../../components/editor_settings/page_setting"
 
 import componentsListConfig from "./componentsList";
-let idGlobal = 8;
+
 export default {
   name: "editor",
   data() {
@@ -249,6 +265,7 @@ export default {
       previewIndex: "",
       navbarList: [],
       selectNavbar: false, // 是否选中底部导航
+      showPageSetting: false, // 是否显示页面设置
       settingComponent: "", // 当前应该显示的设置组件
       settingFreeComponentIndex: "", // 当前应该显示的自由容器设置组件的下标
       JsonDialog: false, // JSON 查看弹窗
@@ -282,7 +299,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(["editorList", "editorIndex", "editorNav"]),
+    ...mapState(["editorList", "editorIndex", "editorNav", "editorCurrentPage", "editorPageData"]),
     getStoreItem() {
       return this.$store.state.editorList;
     }
@@ -313,13 +330,15 @@ export default {
     FreeImageSetting,
     Navbar,
     NavbarSetting,
+    PageSetting,
     vuescroll
   },
   methods: {
     ...mapMutations([
       "CHANGE_EDITOR_LIST",
       "CHANGE_EDITOR_INDEX",
-      "CHANGE_NAVBAR_LIST"
+      "CHANGE_NAVBAR_LIST",
+      "CHANGE_EDITOR_PAGE_DATA"
     ]),
     componentsDel() {
       // 组件删除
@@ -361,10 +380,33 @@ export default {
       this.componentsHandle.show = false;
     },
     refreshVuexState() {
+      console.log('refreshVuexState')
       this.previewList = this.editorList;
       this.previewIndex = this.editorIndex;
       console.log(this.previewList);
       this.$forceUpdate()
+    },
+    changePage(val) {
+      this.settingComponent = '';
+      this.previewIndex = '';
+      if(val.length > 0) {
+        if(val[0].label == "freeContainer") {
+          this.settingFreeComponentIndex = 0;
+        } else {
+          this.settingFreeComponentIndex = '';
+        };
+        // 自动执行一次点击事件
+        // this.clickComponent(val[0], 0, "")
+      } else {
+        this.CHANGE_EDITOR_INDEX("");
+      };
+      // 显示 navbar
+      if(this.editorNav.length > 0) {
+        this.navbarList = this.editorNav;
+        this.showNavbarDragBox = true;
+      };
+      this.clickPreviewHader()
+      this.refreshVuexState();
     },
     mouseoverHandle() {
       this.componentsHandle.show = true;
@@ -405,6 +447,8 @@ export default {
       // 点击组件
       this.selectNavbar = false; // 点击普通组件 取消navbar选中
       this.showNavbarHandle = false; // 隐藏 navbar handle
+
+      this.showPageSetting = false; // 隐藏页面设置
 
       this.CHANGE_EDITOR_INDEX(index);
       this.previewIndex = index;
@@ -462,9 +506,22 @@ export default {
         this.settingFreeComponentIndex = ""; // 自由组件 setting index
       }
     },
+    clickPreviewHader() {
+      if(!this.editorCurrentPage.type && !this.editorCurrentPage.parent) {
+        return;
+      };
+      this.selectNavbar = false; // 点击普通组件 取消navbar选中
+      this.showNavbarHandle = false; // 隐藏 navbar handle
+      this.showPageSetting = true; // 隐藏页面设置
+
+      this.settingComponent = 'PageSetting';
+    },
     clickNavbar(item, index) {
       // 隐藏普通组件handle
       this.componentsHandle.show = false;
+      
+      this.showPageSetting = false; // 隐藏页面设置
+
       // 显示右侧配置页
       this.settingComponent = item.settingComponent;
       this.CHANGE_EDITOR_INDEX("");
@@ -729,6 +786,50 @@ export default {
         this.CHANGE_EDITOR_LIST(editorList);
         this.previewList = editorList;
       }
+    },
+    fillData() {
+      // 填充数据
+      this.$api.editor.getEditor()
+      .then(res => {
+        if(res.data.code === 0) {
+          this.CHANGE_EDITOR_PAGE_DATA(res.data.data.list)
+        } else {
+          this.$message.warning('获取数据失败!')
+        };
+      })
+    },
+    save() {
+      // 保存页面；
+      let editorPageData = this.deepClone(this.editorPageData);
+      let editorCurrentPage = this.deepClone(this.editorCurrentPage);
+      let editorList = this.deepClone(this.editorList);
+      let editorNav = this.deepClone(this.editorNav);
+      let pageSetting = {
+        name: editorCurrentPage.setting.name,
+        headerBg: editorCurrentPage.setting.headerBg
+      }
+      
+      for(let [index, item] of editorPageData.entries()) {
+        if(item.id == editorCurrentPage.parent) {
+          if(editorCurrentPage.type == 'parent') {
+            item.data = editorList;
+            item.nav = editorNav;
+            item.setting = pageSetting;
+          } else if(editorCurrentPage.type == 'children') {
+            for(let [childIndex, childrenItem] of item.children.entries()) {
+              if(childrenItem.id == editorCurrentPage.children) {
+                childrenItem.data = editorList;
+                childrenItem.nav = editorNav;
+                childrenItem.setting = pageSetting;
+                break;
+              };
+            }
+          }
+          break;
+        }
+      };
+      this.CHANGE_EDITOR_PAGE_DATA(editorPageData);
+      this.$message.success('保存成功！')
     },
     deepClone(target) {
       // 定义一个变量

@@ -9,7 +9,7 @@
     box-shadow: 0 2px 6px 0 rgba(0,0,0,.1);
     position: relative;
     line-height: 60px;
-    .json-btn-box {
+    .header-btn-box {
       float: right;
       height: 100%;
     }
@@ -90,13 +90,22 @@
     border-radius: 4px;
     margin: 10px auto 100px;
     // overflow: hidden;
+    .preview-header {
+      height: 40px;
+      width: 100%;
+      position: relative;
+      border-bottom: 1px solid #ddd;
+      font-size: 16px;
+      line-height: 40px;
+      text-align: center;
+    }
     .preview-main {
-      height: 617px;
+      height: 577px;
       width: 100%;
       position: relative;
     }
     .preview-list {
-      min-height: 617px;
+      min-height: 577px;
       list-style: none;
       position: relative;
       .preview-list-box {

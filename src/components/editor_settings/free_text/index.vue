@@ -66,9 +66,6 @@ export default {
     colorChange(val) {
       let editorList = this.editorList;
       let editorIndex = this.editorIndex;
-      // console.log(this.settingFreeComponentIndex)
-      // let setting = editorList[editorIndex].setting.children[this.settingFreeComponentIndex].setting;
-      // setting.color = val;
       editorList[editorIndex].setting.children[this.settingFreeComponentIndex].setting.color = val;
       // editorList[editorIndex].setting = setting;
       this.CHANGE_EDITOR_LIST(editorList)
@@ -77,9 +74,6 @@ export default {
     sizeChange(val) {
       let editorList = this.editorList;
       let editorIndex = this.editorIndex;
-      // let setting = editorList[editorIndex].setting;
-      // setting.size = val;
-      // editorList[editorIndex].setting = setting;
       editorList[editorIndex].setting.children[this.settingFreeComponentIndex].setting.size = val;
       this.CHANGE_EDITOR_LIST(editorList)
       this.tellParent()
@@ -87,9 +81,6 @@ export default {
     textChange(val) {
       let editorList = this.editorList;
       let editorIndex = this.editorIndex;
-      // let setting = editorList[editorIndex].setting;
-      // setting.size = val;
-      // editorList[editorIndex].setting = setting;
       editorList[editorIndex].setting.children[this.settingFreeComponentIndex].setting.text = val;
       this.CHANGE_EDITOR_LIST(editorList)
       this.tellParent()

@@ -2,13 +2,11 @@
   .handle-box {
     border: 1px solid #dcdfe6;
     line-height: 32px;
-    padding: 0 10px;
+    padding: 0 0 0 10px;
+    cursor: pointer;
   }
   .group-children {
     padding-left: 20px;
-    .handle-box {
-      cursor: pointer;
-    }
   }
   .handle-name,
   .handle-icon,
@@ -23,14 +21,32 @@
   }
   .handle-opt {
     float: right;
+    padding-right: 10px;
     .icon {
       margin: 0 5px;
       cursor: pointer;
       font-size: 18px;
       line-height: 32px;
     }
+    .dropdown-box {
+      display: inline-block;
+    }
   }
   ul, li {
     list-style: none;
+  }
+  .add-btn-box {
+    margin-top: 30px;
+    .el-button {
+      display: block;
+      width: 100%;
+    }
+  }
+}
+
+
+.page-manage-move {
+  .dialog-body {
+    text-align: center;
   }
 }

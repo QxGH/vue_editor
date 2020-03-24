@@ -7,6 +7,9 @@ const editor = {
   },
   getAllGoodsList() {
     return axios.post(`${base.http}/getAllGoodsList`);
+  },
+  getEditor() {
+    return axios.post(`${base.http}/getEditor`);
   }
 }
 

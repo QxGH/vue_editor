@@ -1,5 +1,6 @@
 <template>
   <div class="carousel-setting">
+    <el-divider>carousel</el-divider>
     <el-collapse v-model="activeName" accordion>
       <template v-for="(item, index) in editorList[editorIndex].setting.list">
         <el-collapse-item :title="'carousel-'+(index+1)" :name="index+1" :key="index">
