@@ -15,7 +15,7 @@
             <el-tab-pane label="页面管理" name="page">
               <PageManage @refreshState="refreshVuexState" @changePage="changePage"></PageManage>
             </el-tab-pane>
-            <el-tab-pane label="装修组件" name="components">
+            <el-tab-pane label="装修组件" name="components" :disabled="editorPageData.length == 0">
               <draggable
                 element="div"
                 class="component-list clearfix"
@@ -263,6 +263,7 @@ export default {
       previewList: [],
       previewLogData: {}, // preview 拖动log数据
       previewIndex: "",
+      handleIndex: '',
       navbarList: [],
       selectNavbar: false, // 是否选中底部导航
       showPageSetting: false, // 是否显示页面设置
@@ -343,8 +344,9 @@ export default {
     componentsDel() {
       // 组件删除
       let editorList = this.deepClone(this.editorList);
-      let editorIndex = this.deepClone(this.editorIndex);
-      editorList.splice(editorIndex, 1);
+      // let editorIndex = this.deepClone(this.editorIndex);
+      let handleIndex = this.handleIndex;
+      editorList.splice(handleIndex, 1);
       this.previewIndex = "";
       this.CHANGE_EDITOR_INDEX("");
       this.CHANGE_EDITOR_LIST(editorList);
@@ -355,10 +357,11 @@ export default {
     componentsToUp() {
       // 组件排序向上
       let editorList = this.deepClone(this.editorList);
-      let editorIndex = this.deepClone(this.editorIndex);
-      const temp = editorList[editorIndex];
-      editorList[editorIndex] = editorList[editorIndex - 1];
-      editorList[editorIndex - 1] = temp;
+      // let editorIndex = this.deepClone(this.editorIndex);
+      let handleIndex = this.handleIndex;
+      const temp = this.deepClone(editorList[handleIndex]);
+      editorList[handleIndex] = editorList[handleIndex - 1];
+      editorList[handleIndex - 1] = temp;
       this.componentsHandle.show = false;
       this.previewList = editorList;
       this.CHANGE_EDITOR_LIST(editorList);
@@ -366,10 +369,12 @@ export default {
     componentsToDown() {
       // 组件排序向下
       let editorList = this.deepClone(this.editorList);
-      let editorIndex = this.deepClone(this.editorIndex);
-      const temp = editorList[editorIndex];
-      editorList[editorIndex] = editorList[editorIndex + 1];
-      editorList[editorIndex + 1] = temp;
+      // let editorIndex = this.deepClone(this.editorIndex);
+      let handleIndex = this.handleIndex;
+
+      const temp = this.deepClone(editorList[handleIndex]);
+      editorList[handleIndex] = editorList[handleIndex + 1];
+      editorList[handleIndex + 1] = temp;
       this.componentsHandle.show = false;
       this.previewList = editorList;
       this.CHANGE_EDITOR_LIST(editorList);
@@ -416,6 +421,8 @@ export default {
     },
     mouseoverComponenter(item, index, evt) {
       // 鼠标移入组件事件
+      // 记录当前鼠标落在元素的 index
+      this.handleIndex = index
       // 显示 handle
       let id = `previewListBox-${index}`;
       // console.log(document.getElementById(id).offsetTop)

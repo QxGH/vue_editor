@@ -19,7 +19,7 @@
           </el-input>
           <el-divider>点击事件</el-divider>
           <el-button type="primary" plain @click="selectorLinkHandle(item.link.id)">选择链接</el-button>
-          <span class="link-tips" v-if="item.link.label">已设置：{{item.link.label}}</span>
+          <span class="link-tips" v-if="item.link && item.link.label">已设置：{{item.link.label}}</span>
         </el-collapse-item>
       </template>
     </el-collapse>

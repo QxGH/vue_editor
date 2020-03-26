@@ -192,6 +192,7 @@ export default {
       }
 
       this.CHANGE_EDITOR_PAGE_DATA(editorPageData);
+      this.changePageHandel(obj, {}, 'parent')
     },
     copyParent(id) {
       // 赋值父级页面
