@@ -44,6 +44,7 @@
 <script>
 import uuidV4 from "uuid/v4";
 import axios from "axios";
+import baseUrl from '@/api/base'
 
 import compressImg from "../../../tools/compressImg";
 
@@ -127,7 +128,7 @@ export default {
       return false;
     },
     uploadSuccess(res, file) {
-      let url = res.data.imgurl;
+      let url = baseUrl.qiniuStatic + '/' + res.data.key;
       let obj = {
         id: uuidV4(),
         isSelect: false,
@@ -139,26 +140,49 @@ export default {
       localStorage.setItem("imageList", JSON.stringify(imageList));
     },
     uploadError(err, file) {
-      this.$message.error("上传失败，换张图片试试!");
+      this.$message.error("上传失败!");
     },
     uploading(file) {
       this.loading = true;
-      let formData = new FormData();
-      formData.append("Filedata", file);
-      formData.append("file", "multipart");
-      this.$api.imgapi
-        .upload(formData)
+
+      this.$api.qiniu
+        .getTempToken()
         .then(res => {
-          this.loading = false;
-          if (res.data.code === 1) {
-            this.uploadSuccess(res, file);
+          if (res.data.code === 0) {
+            this.uploadImageHandle(res.data.data, file);
           } else {
-            this.uploadError(res, file);
+            this.message.error("获取七牛云 Token 失败！");
+            this.loading = false;
           }
         })
         .catch(err => {
           this.loading = false;
+        });
+    },
+    uploadImageHandle(token, file) {
+      // const fileType = file.type.split("/")[1];
+      const fileType = file.name.substring(file.name.lastIndexOf('.') + 1);
+      let timestamp = Date.parse(new Date());
+      let randomNum = Math.floor(Math.random() * 1000);
+      // 文件名
+      const keyname = `temp/${Math.round(new Date() / 1000)}/${uuidV4()}.${fileType}`;
+      let formData = new FormData();
+      formData.append("file", file);
+      formData.append("token", token);
+      formData.append("key", keyname);
+      this.$api.qiniu.uploadFile(formData)
+        .then(res => {
+          if(res.data.key) {
+            this.uploadSuccess(res, file);
+          } else {
+            this.uploadError(res, file);
+          }
+          this.loading = false
+        })
+        .catch(err => {
+          console.log(err);
           this.uploadError(err, file);
+          this.loading = false
         });
     },
     close() {

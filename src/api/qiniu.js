@@ -8,7 +8,13 @@ const qiniu = {
         'content-type': 'multipart/form-data; boundary=----WebKitFormBoundaryuNl5vDgZ1PlpBttj'
       }
     });
-  }
+  },
+  getTempToken() {
+    return axios.post(`${base.qinxu}/qiniu/getTempToken`);
+  },
+  uploadFile(data) {
+    return axios.post(`${base.qiniu}`, data, { headers: { 'Content-Type': 'multipart/form-data' } });
+  },
 }
 
 export default qiniu;
